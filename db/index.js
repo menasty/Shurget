@@ -1,4 +1,10 @@
-require('dotenv').config();
+try {
+  require('dotenv').config();
+} catch (error) {
+  if (error.code !== 'MODULE_NOT_FOUND') {
+    throw error;
+  }
+}
 
 const { Pool } = require('pg');
 
