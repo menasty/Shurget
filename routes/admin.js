@@ -16,8 +16,9 @@ router.get('/drivers', async (req, res) => {
     const result = await pool.query('SELECT * FROM driver_applications ORDER BY created_at DESC');
     const drivers = result.rows;
 
-    let html = `<h1>Drivers (${drivers.length})</h1><table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">`;
-    html += `<tr><th>Name</th><th>Email</th><th>Phone</th><th>Vehicle</th><th>City</th><th>Status</th><th>Action</th></tr>`;
+    let html = `<h1>Drivers (${drivers.length})</h1>
+      <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+        <tr><th>Name</th><th>Email</th><th>Phone</th><th>Vehicle</th><th>City</th><th>Status</th><th>Action</th></tr>`;
 
     drivers.forEach(driver => {
       html += `
@@ -30,7 +31,7 @@ router.get('/drivers', async (req, res) => {
           <td>${driver.status}</td>
           <td>
             ${driver.status === 'pending' ? 
-              `<a href="/admin/drivers/${driver.id}/activate" style="color:green;font-weight:bold;">Approve</a>` : 
+              `<a href="/admin/drivers/${driver.id}/activate" style="color:green;font-weight:bold;">✅ Approve</a>` : 
               '✅ Active'}
           </td>
         </tr>`;
@@ -40,7 +41,7 @@ router.get('/drivers', async (req, res) => {
     res.send(html);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Database error: ' + err.message);
+    res.status(500).send('Database error');
   }
 });
 
