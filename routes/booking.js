@@ -2,9 +2,23 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.render('booking', {
+  const viewData = {
     title: "Book a Haul - Shurget",
     description: "Get an instant quote for same-day pickup truck delivery."
+  };
+
+  res.render('booking', viewData, (err, html) => {
+    if (err) {
+      console.error('[book] Failed to render booking view:', err.message);
+      return res.status(200).send(`
+        <h1>Book a Haul</h1>
+        <p>Our booking page is temporarily unavailable, but we can still take your request.</p>
+        <p>Email us at support@shurget.com with pickup and dropoff details.</p>
+        <p><a href="/">Back to Home</a></p>
+      `);
+    }
+
+    return res.send(html);
   });
 });
 
