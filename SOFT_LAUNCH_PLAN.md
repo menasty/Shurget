@@ -42,7 +42,7 @@
 1. App walkthrough (screenshot guide of driver-facing flow — to be built)
 2. Pickup checklist: photo on arrival, check-in with customer name
 3. Dropoff checklist: photo on arrival, customer signature or photo confirmation
-4. Emergency contact: Polsia on-call number (placeholder until support agent wired)
+4. Emergency contact:  on-call number (placeholder until support agent wired)
 5. Payment timeline: drivers paid weekly, first payout after 5 deliveries
 
 **Driver expectations during pilot:**
@@ -74,7 +74,7 @@
 - This is a beta pilot — real driver, real truck, real delivery
 - They'll get an upfront price (no surprises)
 - They'll receive SMS with driver name, photo (if available), phone, and ETA
-- Post-delivery, Polsia will follow up for feedback (no spam, one email)
+- Post-delivery,  will follow up for feedback (no spam, one email)
 
 ---
 
@@ -106,7 +106,7 @@ All five must pass before scaling to Phase 2 (more routes, more drivers, marketi
 - [ ] Verify driver location tracking: POST /api/orders/:id/location responds, GET /api/orders/:id returns lat/lng
 - [ ] Confirm Postmark emails are sending (confirmation email on booking)
 - [ ] Set up monitoring: check logs for errors on Render after each delivery
-- [ ] Assign on-call contact (Polsia or human) for driver/customer issues during pilot
+- [ ] Assign on-call contact ( or human) for driver/customer issues during pilot
 
 ### Phase 1 — Active Deliveries (first 5)
 

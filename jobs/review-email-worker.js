@@ -1,5 +1,5 @@
 // jobs/review-email-worker.js — Send queued post-delivery review emails
-// Run by polsia.toml [[crons]] every 15 minutes.
+// Run by .toml [[crons]] every 15 minutes.
 // Scans orders where scheduled_review_email_at <= NOW() and review_email_sent_at IS NULL.
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });

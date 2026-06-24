@@ -30,7 +30,7 @@ async function requireDriver(req, res, next) {
 
 // ── Helper: build absolute base URL ──
 function baseUrl(req) {
-  // Honor proxy headers set by Render / Polsia's proxy layer.
+  // Honor proxy headers set by Render / 's proxy layer.
   const host =
     req.headers['x-original-host'] ||
     req.headers['x-forwarded-host'] ||

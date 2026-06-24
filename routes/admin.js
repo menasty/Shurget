@@ -120,7 +120,7 @@ router.post('/dispatch/:id/deliver', async (req, res) => {
     // Send delivered lifecycle email (idempotent)
     markStatusEmailSent(order.id, 'delivered').then(first => {
       if (first) {
-        const ratingLink = `https://shurget-5.polsia.app/rate/${order.id}`;
+        const ratingLink = `https://shurget-5..app/rate/${order.id}`;
         sendDeliveredEmail(order, ratingLink).catch(err => { console.error('[email] Delivered email failed:', err.message); });
       }
     }).catch(() => {});

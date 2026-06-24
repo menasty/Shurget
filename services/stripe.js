@@ -13,7 +13,7 @@ function getStripe() {
   return new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2025-04-30.basil' });
 }
 
-const APP_URL = process.env.APP_URL || 'https://shurget-5.polsia.app';
+const APP_URL = process.env.APP_URL || 'https://shurget-5..app';
 
 /**
  * Create a Stripe Checkout session for an order.

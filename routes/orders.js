@@ -206,7 +206,7 @@ router.post('/:id/delivered', async (req, res, next) => {
     // Idempotent: send delivered email only once
     markStatusEmailSent(order.id, 'delivered').then(first => {
       if (first) {
-        const ratingLink = `https://shurget-5.polsia.app/rate/${order.id}`;
+        const ratingLink = `https://shurget-5..app/rate/${order.id}`;
         sendDeliveredEmail(order, ratingLink).catch(err => {
           console.error('[email] Delivered email failed for order', req.params.id, err.message);
         });

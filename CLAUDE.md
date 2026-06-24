@@ -12,7 +12,7 @@ Express.js + EJS + PostgreSQL (Neon) + Render
 - `middleware/` — Auth middleware (session.js = signed-cookie admin sessions)
 - `db/` — Database access (index.js = pool, orders.js = order queries, drivers.js = driver queries, partners.js = partner queries, referrals.js = referral code/redemption queries, ratings.js = driver rating queries, quote_requests.js = quote/partner lead queries)
 - `services/` — Business logic (maps.js = geocoding, driver.js = driver matching, stripe.js = Checkout sessions, stripe-connect.js = Connect Express onboarding + transfers, rating-token.js = HMAC signed tokens for rating links, email.js = all Postmark transactional emails, sms.js = Twilio customer + driver notifications, opt-out handling)
-- `jobs/` — Background workers run by polsia.toml crons (review-email-worker.js = post-delivery review email sender)
+- `jobs/` — Background workers run by .toml crons (review-email-worker.js = post-delivery review email sender)
 - `views/` — EJS templates (layout.ejs, booking.ejs, confirmation.ejs, contact.ejs, partners.ejs, embed-quote.ejs, partners-embed.ejs, partner-apply.ejs, partner-login.ejs, partner-dashboard.ejs, partner-magic-sent.ejs, partials/)
 - `public/css/` — Styles (theme.css = design tokens, seo-pages.css = SEO pages, booking.css = booking flow)
 - `public/js/` — Booking flow JS (booking.js)
@@ -42,10 +42,10 @@ Express.js + EJS + PostgreSQL (Neon) + Render
 - OpenAI (future AI features, via OPENAI_API_KEY)
 - Stripe (Stripe Checkout for customer payments + Connect Express for driver payouts — STRIPE_SECRET_KEY env var; orders go to `pending_payment` → `paid` after checkout; drivers onboard via `/driver/payouts`, transfers fire on delivery at 85% of order total)
 - Google Analytics 4 (GA4_MEASUREMENT_ID env var; set to G-XXXXXXXXXX for shurget.com — tracks booking funnel, driver onboarding, /contact, /pricing; no-ops if unset)
-- Polsia R2 (future image uploads)
+-  R2 (future image uploads)
 
 ## Recent changes
-- (2026-06-19) Full rebrand: Shurget → Shurget — all copy, emails, SMS, URLs, legal pages, SEO pages, widget, sitemap, and admin panel updated. Deploy target: shurget-5.polsia.app.
+- (2026-06-19) Full rebrand: Shurget → Shurget — all copy, emails, SMS, URLs, legal pages, SEO pages, widget, sitemap, and admin panel updated. Deploy target: shurget-5..app.
 - (2026-06-19) Referral attribution fix — migration 1752000000 adds `referred_by_driver_name` to driver_applications (denormalized at submission time); `db/drivers.js` `createDriverApplication` now captures referrer name; `getDriverApplications` drops fragile self-join; EJS uses `referred_by_driver_name` directly; `/admin/drivers` shows referral source reliably.
 - (2026-06-18) Mobile-first driver portal + self-service claim — migration 1750900000 adds `claim_hold_expires_at`/`claim_hold_driver_id` to orders; race-safe 60s soft-claim with DB-level `UPDATE ... WHERE`; `db/orders.js` gains `claimJob`, `confirmClaim`, `releaseExpiredClaims`, `markJobArrived`, `markJobLoaded`, `markJobDelivered`; `routes/driver.js` adds `/claim`, `/confirm`, `/arrived`, `/loaded`, `/deliver` endpoints; `driver-jobs.ejs` rebuilt mobile-first with claim countdown bar, payout breakdown, one-tap Active Jobs status buttons (En Route → Arrived → Loaded → Delivered), jobs sorted by payout desc.
 - (2026-06-18) Lifecycle order status emails — migration 1750850000 adds `status_emails_sent` JSONB column to orders for idempotency; `db/orders.js` gains `markStatusEmailSent()` + `wasStatusEmailSent()`; all 5 email types (driver_assigned, en_route, delivered, cancelled, payment_failed) now fire from `routes/admin.js` dispatch actions + `routes/driver.js` + `routes/orders.js` with idempotency guards.
