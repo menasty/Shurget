@@ -6,7 +6,7 @@ const crypto = require('crypto');
 
 // Secret key for HMAC — falls back to a static dev key; MUST be set in prod via env var.
 function getSecret() {
-  return process.env.RATING_TOKEN_SECRET || 'haulr-dev-rating-token-secret-change-in-prod';
+  return process.env.RATING_TOKEN_SECRET || 'Shurget-dev-rating-token-secret-change-in-prod';
 }
 
 const TOKEN_TTL_SECONDS = 14 * 24 * 60 * 60; // 14 days

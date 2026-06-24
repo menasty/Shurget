@@ -159,14 +159,14 @@
       </thead>
       <tbody>
         <tr>
-          <td>haulr_consent</td>
+          <td>Shurget_consent</td>
           <td>Shurget</td>
           <td>Stores your cookie consent choice (accepted or declined) so we don't ask every visit.</td>
           <td>12 months</td>
           <td><span class="badge badge-required">Essential</span></td>
         </tr>
         <tr>
-          <td>haulr_admin</td>
+          <td>Shurget_admin</td>
           <td>Shurget</td>
           <td>Signed session cookie for admin authentication. Only set when an admin logs in. Never set for regular users.</td>
           <td>8 hours</td>
@@ -213,10 +213,10 @@
   <script>
   document.getElementById('reset-consent-btn').addEventListener('click', function () {
     // Clear from localStorage (new consent mechanism)
-    localStorage.removeItem('haulr_consent');
-    localStorage.removeItem('haulr_consent_ts');
+    localStorage.removeItem('Shurget_consent');
+    localStorage.removeItem('Shurget_consent_ts');
     // Also clear legacy cookie if present
-    document.cookie = 'haulr_consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax';
+    document.cookie = 'Shurget_consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax';
     document.documentElement.removeAttribute('data-cc-granted');
     document.documentElement.removeAttribute('data-cc-analytics');
     alert('Cookie preferences cleared. The banner will reappear on your next page visit.');

@@ -1,6 +1,6 @@
 <%
 /* Cookie Consent Banner
-   - Shows on first visit if no haulr_consent key in localStorage
+   - Shows on first visit if no Shurget_consent key in localStorage
    - Two actions: "Accept all" (enables GA4) or "Essential only" (blocks GA4)
    - Persists consent in localStorage for 12 months
    - GA4 init is gated: only fires if consent === 'accepted'
@@ -81,8 +81,8 @@
 (function () {
   var BANNER = document.getElementById('cc-banner');
   var HTML = document.documentElement;
-  var KEY = 'haulr_consent';
-  var TS_KEY = 'haulr_consent_ts';
+  var KEY = 'Shurget_consent';
+  var TS_KEY = 'Shurget_consent_ts';
   var TTL_MS = 365 * 24 * 60 * 60 * 1000; // 12 months
 
   function getConsent() {
