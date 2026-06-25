@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
     res.send(`
       <div style="max-width: 600px; margin: 40px auto; padding: 40px; text-align: center;">
         <h1 style="color: #ea580c;">✅ Order #${orderId} Received!</h1>
-        <p>Thank you. Your booking has been created and is pending driver assignment.</p>
+        <p>Thank you. Your booking has been created.</p>
         <p><a href="/book">Book Another Haul</a> | <a href="/">← Back to Home</a></p>
       </div>
     `);
