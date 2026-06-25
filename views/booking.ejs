@@ -16,14 +16,14 @@
   <h1>Book a Pickup Truck</h1>
   <p>Get an instant quote and book same-day delivery.</p>
 
-  <form action="/api/booking" method="POST">
+  <form action="/book" method="POST">
     <label>What are you moving?</label>
     <select name="itemType" required>
       <option value="">Select item</option>
       <option value="sofa">Sofa / Couch</option>
       <option value="mattress">Mattress</option>
-      <option value="furniture">Furniture (Dresser, Table, etc.)</option>
-      <option value="appliance">Appliance (Fridge, Washer)</option>
+      <option value="furniture">Furniture</option>
+      <option value="appliance">Appliance</option>
       <option value="other">Other</option>
     </select>
 
@@ -32,6 +32,13 @@
 
     <label>Dropoff Address</label>
     <input type="text" name="dropoffAddress" placeholder="456 Oak Ave, Denver, CO" required>
+
+    <label>Need Helpers?</label>
+    <select name="helpers">
+      <option value="0">No helpers needed</option>
+      <option value="1">1 Helper (+$25)</option>
+      <option value="2">2 Helpers (+$45)</option>
+    </select>
 
     <button type="submit">Get Quote & Book</button>
   </form>
