@@ -16,13 +16,9 @@ app.get('/', (req, res) => {
 
 app.get('/health', (req, res) => res.json({ status: 'healthy' }));
 
-app.get('/book', (req, res) => {
-  res.send('<h1>Book a Haul</h1><p>Booking form coming soon.</p>');
-});
-
-app.get('/admin', (req, res) => {
-  res.send('<h1>Admin Panel</h1><p>Driver management coming soon.</p>');
-});
+// Routes
+app.use('/admin', require('./routes/admin'));
+app.use('/book', require('./routes/booking'));
 
 app.listen(port, () => {
   console.log(`✅ Shurget server running on port ${port}`);
