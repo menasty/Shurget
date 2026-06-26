@@ -37,9 +37,14 @@ async function migrate() {
     console.log('✅ All tables ready');
   } catch (err) {
     console.error('Migration error:', err.message);
+    throw err;
   } finally {
     client.release();
+    await pool.end();
   }
 }
 
-migrate().catch(console.error);
+migrate().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
