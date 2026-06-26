@@ -2,7 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../db/index');
 const Stripe = require('stripe');
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+function getStripeClient() {
+  const rawKey = process.env.STRIPE_SECRET_KEY;
+  const stripeKey = typeof rawKey === 'string' ? rawKey.trim().replace(/^['\"]|['\"]$/g, '') : '';
+
+  // Guard against bad env formatting (quoted, empty, or wrong key type) to avoid 401s.
+  if (!stripeKey || (!stripeKey.startsWith('sk_test_') && !stripeKey.startsWith('sk_live_'))) {
+    throw new Error('Invalid STRIPE_SECRET_KEY configuration');
+  }
+
+  return new Stripe(stripeKey);
+}
 
 router.get('/', (req, res) => {
   res.render('booking');
@@ -16,6 +27,8 @@ router.post('/', async (req, res) => {
     const basePrice = 89;
     const helperPrice = helperCount * 25;
     const totalAmount = basePrice + helperPrice;
+
+    const stripeClient = getStripeClient();
 
     // Create Stripe Checkout Session
     const session = await stripeClient.checkout.sessions.create({
@@ -44,6 +57,11 @@ router.post('/', async (req, res) => {
 
     res.redirect(session.url);
   } catch (err) {
+    if (err && err.message === 'Invalid STRIPE_SECRET_KEY configuration') {
+      console.error('Stripe configuration error: STRIPE_SECRET_KEY is missing or malformed');
+      return res.status(503).send('Payments are temporarily unavailable. Please try again later.');
+    }
+
     console.error('Stripe error:', err);
     res.status(500).send('Payment session failed. Please try again.');
   }
