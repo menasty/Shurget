@@ -12,6 +12,8 @@ const {
   getDriverByReferralCode,
 } = require('../db/drivers');
 
+const ga4Id = process.env.GA4_MEASUREMENT_ID || '';
+
 // GET /drive/earn — public recruitment landing page; accepts ?ref=CODE for driver referral tracking
 router.get('/earn', async (req, res) => {
   const refCode = req.query.ref || null;
@@ -20,7 +22,7 @@ router.get('/earn', async (req, res) => {
     const referrer = await getDriverByReferralCode(refCode).catch(() => null);
     if (referrer) referrerName = referrer.name;
   }
-  res.render('drive-earn', { refCode, referrerName });
+  res.render('drive-earn', { refCode, referrerName, ga4Id });
 });
 
 // GET /drive
@@ -30,8 +32,7 @@ router.get('/', async (req, res) => {
   if (email) {
     application = await getDriverApplicationByEmail(email);
   }
-  // ga4Id is available via res.locals (set in server.js middleware)
-  res.render('drive', { application });
+  res.render('drive', { application, ga4Id });
 });
 
 // GET /api/drive/status?email=...
