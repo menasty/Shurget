@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../db/index');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Stripe = require('stripe');
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 router.get('/', (req, res) => {
   res.render('booking');
@@ -17,7 +18,7 @@ router.post('/', async (req, res) => {
     const totalAmount = basePrice + helperPrice;
 
     // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripeClient.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
