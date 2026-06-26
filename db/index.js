@@ -1,3 +1,5 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const { Pool } = require('pg');
 
 const INVALID_DB_HOSTS = new Set(['', 'base', 'localhost', '127.0.0.1', '::1']);
