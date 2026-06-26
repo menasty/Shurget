@@ -6,6 +6,26 @@ function normalize(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function sanitizeDatabaseUrl(value) {
+  let sanitized = normalize(value);
+  if (!sanitized) return '';
+
+  // Support accidental env-file style values, e.g. DATABASE_URL="postgres://..."
+  const prefixed = sanitized.match(/^DATABASE_URL\s*=\s*(.+)$/i);
+  if (prefixed) {
+    sanitized = prefixed[1].trim();
+  }
+
+  if (
+    (sanitized.startsWith('"') && sanitized.endsWith('"')) ||
+    (sanitized.startsWith("'") && sanitized.endsWith("'"))
+  ) {
+    sanitized = sanitized.slice(1, -1).trim();
+  }
+
+  return sanitized;
+}
+
 function isInvalidHost(hostname) {
   return INVALID_DB_HOSTS.has(normalize(hostname).toLowerCase());
 }
@@ -15,7 +35,7 @@ function hasCompletePgConfig(pgHost, pgUser, pgDatabase) {
 }
 
 function buildPoolConfig() {
-  const rawDatabaseUrl = normalize(process.env.DATABASE_URL);
+  const rawDatabaseUrl = sanitizeDatabaseUrl(process.env.DATABASE_URL);
   const pgHost = normalize(process.env.PGHOST);
   const pgUser = normalize(process.env.PGUSER);
   const pgPassword = normalize(process.env.PGPASSWORD);
@@ -67,4 +87,16 @@ const pool = new Pool({
   }
 });
 
-module.exports = { pool };
+function query(text, params) {
+  return pool.query(text, params);
+}
+
+function connect() {
+  return pool.connect();
+}
+
+function end() {
+  return pool.end();
+}
+
+module.exports = { pool, query, connect, end };
