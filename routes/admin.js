@@ -6,7 +6,7 @@ router.get('/', (req, res) => {
   res.render('admin-index');
 });
 
-// Drivers - already working
+// Drivers
 router.get('/drivers', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM driver_applications ORDER BY created_at DESC');
@@ -20,20 +20,36 @@ router.get('/drivers', async (req, res) => {
 router.get('/bookings', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
-    res.render('admin-bookings', { orders: result.rows || [] });
+    res.render('admin-bookings', { 
+      orders: result.rows || [],
+      flash: null 
+    });
   } catch (e) {
-    res.render('admin-bookings', { orders: [] });
+    res.render('admin-bookings', { orders: [], flash: null });
   }
 });
 
 // Dispatch
-router.get('/dispatch', (req, res) => {
-  res.render('admin-dispatch', { pending: [], active: [] });
+router.get('/dispatch', async (req, res) => {
+  try {
+    const drivers = await pool.query('SELECT * FROM driver_applications WHERE status = $1', ['active']);
+    res.render('admin-dispatch', { 
+      drivers: drivers.rows || [],
+      pending: [],
+      active: []
+    });
+  } catch (e) {
+    res.render('admin-dispatch', { drivers: [], pending: [], active: [] });
+  }
 });
 
 // Metrics
 router.get('/metrics', (req, res) => {
-  res.render('admin-metrics', { metrics: {}, byStatus: [], daily: [] });
+  res.render('admin-metrics', { 
+    metrics: { totals: { total_orders: 0, completed: 0, cancelled: 0 } },
+    byStatus: [],
+    daily: []
+  });
 });
 
 // Ratings
