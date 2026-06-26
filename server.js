@@ -17,6 +17,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/book', require('./routes/booking'));
 app.use('/confirmation', require('./routes/confirmation'));
 app.use('/admin', require('./routes/admin'));
+app.use('/drive', require('./routes/drive'));     // ← Added
+app.use('/driver', require('./routes/driver'));
 
 app.get('/', (req, res) => {
   res.render('layout', { title: 'Shurget - Pickup Truck Delivery' });
