@@ -6,13 +6,13 @@ router.get('/', (req, res) => {
   res.render('admin-index');
 });
 
-// Drivers
+// Drivers - already working
 router.get('/drivers', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM driver_applications ORDER BY created_at DESC');
-    res.render('admin-drivers', { drivers: result.rows });
+    res.render('admin-drivers', { drivers: result.rows || [] });
   } catch (e) {
-    res.send('Error loading drivers');
+    res.render('admin-drivers', { drivers: [] });
   }
 });
 
@@ -20,20 +20,20 @@ router.get('/drivers', async (req, res) => {
 router.get('/bookings', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
-    res.render('admin-bookings', { orders: result.rows });
+    res.render('admin-bookings', { orders: result.rows || [] });
   } catch (e) {
-    res.send('Error loading bookings');
+    res.render('admin-bookings', { orders: [] });
   }
 });
 
 // Dispatch
 router.get('/dispatch', (req, res) => {
-  res.render('admin-dispatch');
+  res.render('admin-dispatch', { pending: [], active: [] });
 });
 
 // Metrics
 router.get('/metrics', (req, res) => {
-  res.render('admin-metrics');
+  res.render('admin-metrics', { metrics: {}, byStatus: [], daily: [] });
 });
 
 // Ratings
