@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../db/index');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
 
 router.get('/', (req, res) => {
   res.render('booking');
@@ -10,24 +11,30 @@ router.post('/', async (req, res) => {
   try {
     const { itemType, pickupAddress, dropoffAddress, helpers = '0' } = req.body;
     
-    const result = await pool.query(`
-      INSERT INTO orders (item_type, pickup_address, dropoff_address, helpers, status, created_at)
-      VALUES ($1, $2, $3, $4, 'pending', NOW())
-      RETURNING id
-    `, [itemType, pickupAddress, dropoffAddress, parseInt(helpers)]);
+    const helperCount = parseInt(helpers) || 0;
+    const basePrice = 89;
+    const helperPrice = helperCount * 25;
+    const total = basePrice + helperPrice;
 
-    const orderId = result.rows[0].id;
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{
+        price_data: {
+          currency: 'usd',
+          product_data: { name: `${itemType} Delivery via Shurget` },
+          unit_amount: total * 100,
+        },
+        quantity: 1,
+      }],
+      mode: 'payment',
+      success_url: `https://shurget-v1-1.onrender.com/confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://shurget-v1-1.onrender.com/book`,
+    });
 
-    res.send(`
-      <div style="max-width: 600px; margin: 40px auto; padding: 40px; text-align: center; font-family: system-ui;">
-        <h1 style="color: #ea580c;">✅ Order #${orderId} Received!</h1>
-        <p>Thank you. Your booking has been created and is pending driver assignment.</p>
-        <p><a href="/book">Book Another Haul</a> | <a href="/">← Back to Home</a></p>
-      </div>
-    `);
+    res.redirect(session.url);
   } catch (err) {
-    console.error('Booking error:', err);
-    res.status(500).send('Error creating order. Please try again.');
+    console.error(err);
+    res.send('Payment session error. Try again or contact support.');
   }
 });
 
