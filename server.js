@@ -3,8 +3,14 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const bodyLimit = process.env.BODY_LIMIT || '10mb';
+const bodyLimit = process.env.BODY_LIMIT || '1mb';
+const driveBodyLimit = process.env.DRIVE_BODY_LIMIT || '10mb';
 
+// Driver onboarding can include large document payloads.
+app.use('/drive', express.json({ limit: driveBodyLimit }));
+app.use('/drive', express.urlencoded({ extended: true, limit: driveBodyLimit }));
+
+// Keep tighter limits for the rest of the app.
 app.use(express.json({ limit: bodyLimit }));
 app.use(express.urlencoded({ extended: true, limit: bodyLimit }));
 
