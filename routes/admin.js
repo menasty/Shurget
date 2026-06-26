@@ -6,6 +6,7 @@ router.get('/', (req, res) => {
   res.render('admin-index');
 });
 
+// Drivers
 router.get('/drivers', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM driver_applications ORDER BY created_at DESC');
@@ -15,6 +16,7 @@ router.get('/drivers', async (req, res) => {
   }
 });
 
+// Bookings
 router.get('/bookings', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
@@ -24,8 +26,19 @@ router.get('/bookings', async (req, res) => {
   }
 });
 
+// Dispatch
 router.get('/dispatch', (req, res) => {
   res.render('admin-dispatch');
+});
+
+// Metrics
+router.get('/metrics', (req, res) => {
+  res.render('admin-metrics');
+});
+
+// Ratings
+router.get('/ratings', (req, res) => {
+  res.render('admin-ratings');
 });
 
 module.exports = router;
