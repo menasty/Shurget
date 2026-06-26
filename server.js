@@ -46,25 +46,52 @@ app.get('/health/schema', async (req, res) => {
   }
 });
 
+async function ensureCoreSchema() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS driver_applications (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      phone TEXT,
+      vehicle_type TEXT,
+      city TEXT,
+      status TEXT DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id SERIAL PRIMARY KEY,
+      item_type TEXT,
+      pickup_address TEXT,
+      dropoff_address TEXT,
+      helpers INTEGER DEFAULT 0,
+      status TEXT DEFAULT 'pending',
+      driver_id INTEGER,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
 // Routes
 app.use('/admin', require('./routes/admin'));
 app.use('/book', require('./routes/booking'));
 
-app.listen(port, () => {
-  console.log(`✅ Shurget server running on port ${port}`);
+async function startServer() {
+  try {
+    await ensureCoreSchema();
+    console.log('✅ Core schema ready');
 
-  // Log schema readiness on boot so deploy logs surface missing table issues quickly.
-  pool
-    .query(`SELECT to_regclass('public.orders') AS orders_table`)
-    .then(({ rows }) => {
-      const isReady = rows[0] && rows[0].orders_table === 'orders';
-      if (isReady) {
-        console.log('✅ Schema check: orders table exists');
-      } else {
-        console.error('❌ Schema check: orders table missing');
-      }
-    })
-    .catch((error) => {
-      console.error('❌ Schema check failed:', error.message);
+    app.listen(port, () => {
+      console.log(`✅ Shurget server running on port ${port}`);
     });
-});
+  } catch (error) {
+    console.error('❌ Startup schema initialization failed:', error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
