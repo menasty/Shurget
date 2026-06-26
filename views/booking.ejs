@@ -3,57 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <title>Book a Haul - Shurget</title>
+  <link rel="stylesheet" href="/css/theme.css">
   <style>
-    body { font-family: system-ui; max-width: 800px; margin: 40px auto; padding: 20px; background: #f8f9fa; }
-    h1 { color: #ea580c; text-align: center; }
-    form { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
-    label { font-weight: bold; display: block; margin: 18px 0 6px; color: #333; }
-    input, select, button { width: 100%; padding: 16px; font-size: 17px; border: 2px solid #ddd; border-radius: 10px; }
-    button { background: #ea580c; color: white; font-weight: bold; cursor: pointer; margin-top: 25px; font-size: 18px; }
-    button:hover { background: #e04e00; }
-    #price-estimate { font-size: 2rem; font-weight: bold; color: #ea580c; text-align: center; margin: 25px 0; padding: 15px; background: #fff5f0; border-radius: 12px; }
+    .booking-container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    h1 { color: #ea580c; text-align: center; margin-bottom: 10px; }
+    .subtitle { text-align: center; color: #555; margin-bottom: 30px; }
+    label { font-weight: 600; color: #222; display: block; margin: 20px 0 8px; }
+    input, select, button {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #ea580c;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 30px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #e04e00; transform: translateY(-2px); }
+    #price-estimate {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #ea580c;
+      text-align: center;
+      margin: 25px 0;
+      padding: 20px;
+      background: #fff5f0;
+      border-radius: 12px;
+      border: 2px solid #ea580c;
+    }
   </style>
 </head>
 <body>
-  <h1>Book a Pickup Truck Haul</h1>
-  <p style="text-align:center; color:#555;">Same-day delivery for items that don't fit in your car.</p>
+  <div class="booking-container">
+    <h1>Book Your Haul</h1>
+    <p class="subtitle">Same-day pickup truck delivery for anything that won't fit in your car.</p>
 
-  <form action="/book" method="POST" id="bookingForm">
-    <label>What are you moving?</label>
-    <select name="itemType" id="itemType" required>
-      <option value="">Select item type</option>
-      <option value="sofa">Sofa / Couch</option>
-      <option value="mattress">Mattress</option>
-      <option value="furniture">Furniture</option>
-      <option value="appliance">Appliance</option>
-      <option value="other">Other</option>
-    </select>
+    <form action="/book" method="POST" id="bookingForm">
+      <label>What are you moving?</label>
+      <select name="itemType" id="itemType" required>
+        <option value="">Select category</option>
+        <option value="furniture">Furniture (Sofa, Dresser, Table, Bed Frame)</option>
+        <option value="mattress">Mattress or Box Spring</option>
+        <option value="appliance">Appliance (Fridge, Washer, Dryer, TV)</option>
+        <option value="building">Building Materials (Lumber, Drywall, Windows)</option>
+        <option value="landscaping">Landscaping / Garden (Plants, Soil, Mulch, Grill)</option>
+        <option value="moving">Moving Boxes or Small Household Items</option>
+        <option value="marketplace">Facebook Marketplace / Craigslist Pickup</option>
+        <option value="retail">Retail / Store Pickup (IKEA, Costco, Home Depot)</option>
+        <option value="other">Other (describe in notes)</option>
+      </select>
 
-    <label>Pickup Address</label>
-    <input type="text" name="pickupAddress" id="pickupAddress" placeholder="962 Oakwood Dr, Castle Rock, CO" required>
+      <label>Pickup Address</label>
+      <input type="text" name="pickupAddress" id="pickupAddress" placeholder="962 Oakwood Dr, Castle Rock, CO" required>
 
-    <label>Dropoff Address</label>
-    <input type="text" name="dropoffAddress" id="dropoffAddress" placeholder="340 Colorado Blvd, Denver, CO" required>
+      <label>Dropoff Address</label>
+      <input type="text" name="dropoffAddress" id="dropoffAddress" placeholder="340 Colorado Blvd, Denver, CO" required>
 
-    <label>Need Helpers?</label>
-    <select name="helpers" id="helpers">
-      <option value="0">No helpers needed</option>
-      <option value="1">1 Helper (+$25)</option>
-      <option value="2">2 Helpers (+$45)</option>
-    </select>
+      <label>Need Helpers?</label>
+      <select name="helpers" id="helpers">
+        <option value="0">No helpers needed</option>
+        <option value="1">1 Helper (+$25)</option>
+        <option value="2">2 Helpers (+$45)</option>
+      </select>
 
-    <div id="price-estimate">$89.00</div>
+      <div id="price-estimate">$89.00</div>
 
-    <button type="submit">Continue to Secure Payment →</button>
-  </form>
-
-  <p style="text-align:center"><a href="/">← Back to Home</a></p>
+      <button type="submit">Continue to Secure Payment →</button>
+    </form>
+  </div>
 
   <script>
     function calculatePrice() {
       const item = document.getElementById('itemType').value;
       const helpers = parseInt(document.getElementById('helpers').value) || 0;
-      let base = item === 'appliance' ? 109 : (item === 'furniture' ? 79 : 89);
+      
+      let base = 89;
+      if (['appliance','building'].includes(item)) base = 119;
+      else if (item === 'furniture') base = 89;
+      else if (item === 'mattress') base = 79;
+      
       const total = base + (helpers * 25);
       document.getElementById('price-estimate').textContent = '$' + total.toFixed(2);
     }
