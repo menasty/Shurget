@@ -13,13 +13,13 @@ router.get('/earn', (req, res) => {
   res.render('drive-earn', { refCode: null, referrerName: null });
 });
 
-// Handle driver application submission
+// POST /drive (form action)
 router.post('/', async (req, res) => {
   try {
     const { name, email, phone, vehicleType, city } = req.body;
 
     if (!name || !email || !phone || !vehicleType || !city) {
-      return res.status(400).send('Missing required fields');
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const result = await pool.query(`
@@ -28,15 +28,14 @@ router.post('/', async (req, res) => {
       RETURNING id
     `, [name, email, phone, vehicleType, city]);
 
-    res.send(`
-      <h2 style="color:#ea580c">✅ Application Received!</h2>
-      <p>Thank you, ${name}. Your application has been submitted.</p>
-      <p>We'll review it and get back to you shortly.</p>
-      <p><a href="/drive">Submit Another Application</a> | <a href="/">Back to Home</a></p>
-    `);
+    res.json({ 
+      success: true, 
+      message: 'Application received!',
+      application: { id: result.rows[0].id }
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error submitting application. Please try again.');
+    res.status(500).json({ error: 'Failed to submit application' });
   }
 });
 
