@@ -3,7 +3,10 @@ const router = express.Router();
 const { pool } = require('../db/index');
 
 router.get('/', (req, res) => {
-  res.render('drive', { application: null });
+  res.render('drive', {
+    application: null,
+    ga4Id: process.env.GA4_MEASUREMENT_ID || ''
+  });
 });
 
 router.post('/', async (req, res) => {
