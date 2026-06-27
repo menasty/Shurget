@@ -214,6 +214,66 @@ async function sendQuoteRequestEmail(request) {
   }
 }
 
+async function sendDriverApplicationConfirmation({ name, email, applicationId }) {
+  if (!POSTMARK_SERVER_TOKEN) {
+    console.warn('[email] POSTMARK_SERVER_TOKEN not set — skipping driver application confirmation');
+    return;
+  }
+
+  if (!email) {
+    console.warn('[email] Missing driver application email — skipping confirmation');
+    return;
+  }
+
+  const firstName = name ? String(name).trim().split(' ')[0] : 'there';
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#222;">
+  <div style="background:#1a1a2e;color:#fff;padding:24px;border-radius:8px 8px 0 0;">
+    <h1 style="margin:0;font-size:24px;">Shurget</h1>
+    <p style="margin:4px 0 0;opacity:.8;">Driver Application Received</p>
+  </div>
+  <div style="border:1px solid #e5e7eb;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+    <p style="margin:0 0 12px;">Hi ${escapeHtml(firstName)},</p>
+    <p style="margin:0 0 16px;">Thanks for applying to drive with Shurget. We received your application and our team is reviewing it now.</p>
+    ${applicationId ? `<p style="margin:0 0 16px;color:#6b7280;font-size:14px;">Application ID: <strong>#${applicationId}</strong></p>` : ''}
+    <p style="margin:0 0 8px;">What happens next:</p>
+    <p style="margin:0 0 6px;">1. We review your details and market availability.</p>
+    <p style="margin:0 0 6px;">2. If approved, we send onboarding and payout setup instructions.</p>
+    <p style="margin:0;">3. You can start claiming jobs from your driver portal.</p>
+  </div>
+</body>
+</html>`;
+
+  const text = `Shurget — Driver Application Received\n\nHi ${firstName},\n\nThanks for applying to drive with Shurget. We received your application and our team is reviewing it now.${applicationId ? `\n\nApplication ID: #${applicationId}` : ''}\n\nWhat happens next:\n1. We review your details and market availability.\n2. If approved, we send onboarding and payout setup instructions.\n3. You can start claiming jobs from your driver portal.`;
+
+  const res = await fetch('https://api.postmarkapp.com/email', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Postmark-Server-Token': POSTMARK_SERVER_TOKEN,
+    },
+    body: JSON.stringify({
+      From: FROM_EMAIL,
+      To: email,
+      Subject: 'We received your Shurget driver application',
+      HtmlBody: html,
+      TextBody: text,
+      MessageStream: 'outbound',
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('[email] Driver application confirmation error:', res.status, err);
+  } else {
+    console.log(`[email] Driver application confirmation sent to ${email}`);
+  }
+}
+
 function escapeHtml(str) {
   if (!str) return '';
   return String(str)
@@ -1190,6 +1250,7 @@ async function sendDriverNewJobAlert({ driverEmail, driverName, orderId, itemTyp
 module.exports = {
   sendConfirmationEmail,
   sendQuoteRequestEmail,
+  sendDriverApplicationConfirmation,
   sendDriverAssignedEmail,
   sendInTransitEmail,
   sendDeliveredEmail,
