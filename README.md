@@ -43,3 +43,5 @@ DATABASE_URL="postgresql://..." npm run dev
 
 Configured for Render via `render.yaml`. `npm run build` runs migrations on
 deploy.
+
+Note: Documentation touch-up commit for deployment workflow verification.
