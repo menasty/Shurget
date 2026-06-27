@@ -18,6 +18,7 @@ async function migrate() {
       ADD COLUMN IF NOT EXISTS vehicle_insurance_doc TEXT,
       ADD COLUMN IF NOT EXISTS driver_license_doc TEXT,
       ADD COLUMN IF NOT EXISTS vehicle_registration_doc TEXT,
+      ADD COLUMN IF NOT EXISTS reviewed_at TIMESTAMPTZ,
       ADD COLUMN IF NOT EXISTS background_check_consent BOOLEAN DEFAULT FALSE,
       ADD COLUMN IF NOT EXISTS background_check_status TEXT DEFAULT 'pending',
       ADD COLUMN IF NOT EXISTS background_check_id TEXT,

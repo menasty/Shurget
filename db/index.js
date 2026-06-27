@@ -82,12 +82,26 @@ function buildPoolConfig() {
   );
 }
 
-const pool = new Pool({
-  ...buildPoolConfig(),
-  ssl: {
-    rejectUnauthorized: false
+function shouldSetDefaultSsl(config) {
+  if (!config || !config.connectionString) {
+    return true;
   }
-});
+
+  try {
+    const parsed = new URL(config.connectionString);
+    return !parsed.searchParams.get('sslmode');
+  } catch (_error) {
+    // If URL parsing fails here, leave behavior unchanged and keep default SSL.
+    return true;
+  }
+}
+
+const poolConfig = buildPoolConfig();
+if (shouldSetDefaultSsl(poolConfig)) {
+  poolConfig.ssl = { rejectUnauthorized: false };
+}
+
+const pool = new Pool(poolConfig);
 
 function query(text, params) {
   return pool.query(text, params);

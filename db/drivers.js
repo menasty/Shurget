@@ -36,18 +36,36 @@ async function createDriverApplication(data) {
 
 /** Get application status by email — used for the onboarding status screen. */
 async function getDriverApplicationByEmail(email) {
-  const { rows } = await db.query(
-    `SELECT id, name, email, phone, vehicle_type, city,
-            status, background_check_consent,
-            vehicle_insurance_doc, driver_license_doc, vehicle_registration_doc,
-            created_at, reviewed_at
-     FROM driver_applications
-     WHERE email = $1
-     ORDER BY created_at DESC
-     LIMIT 1`,
-    [email]
-  );
-  return rows[0] || null;
+  try {
+    const { rows } = await db.query(
+      `SELECT id, name, email, phone, vehicle_type, city,
+              status, background_check_consent,
+              vehicle_insurance_doc, driver_license_doc, vehicle_registration_doc,
+              created_at, reviewed_at
+       FROM driver_applications
+       WHERE email = $1
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [email]
+    );
+    return rows[0] || null;
+  } catch (err) {
+    if (err && err.code === '42703') {
+      const { rows } = await db.query(
+        `SELECT id, name, email, phone, vehicle_type, city,
+                status, background_check_consent,
+                vehicle_insurance_doc, driver_license_doc, vehicle_registration_doc,
+                created_at, NULL::timestamptz AS reviewed_at
+         FROM driver_applications
+         WHERE email = $1
+         ORDER BY created_at DESC
+         LIMIT 1`,
+        [email]
+      );
+      return rows[0] || null;
+    }
+    throw err;
+  }
 }
 
 /** Fetch an approved driver by email — used for the driver jobs portal. */
@@ -88,14 +106,31 @@ async function getDriverApplications(filters = {}) {
 
 /** Activate a driver so they appear in the matching pool, and auto-assign a referral code. */
 async function activateDriver(id) {
-  const { rows } = await db.query(
-    `UPDATE driver_applications
-       SET status = 'active', reviewed_at = NOW()
-       WHERE id = $1
-       RETURNING *`,
-    [id]
-  );
-  const driver = rows[0] || null;
+  let driver;
+  try {
+    const { rows } = await db.query(
+      `UPDATE driver_applications
+         SET status = 'active', reviewed_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+      [id]
+    );
+    driver = rows[0] || null;
+  } catch (err) {
+    if (!(err && err.code === '42703')) {
+      throw err;
+    }
+
+    const { rows } = await db.query(
+      `UPDATE driver_applications
+         SET status = 'active'
+         WHERE id = $1
+         RETURNING *`,
+      [id]
+    );
+    driver = rows[0] || null;
+  }
+
   // Auto-assign referral code on activation if not already set
   if (driver && !driver.referral_code) {
     return assignReferralCode(id);
@@ -105,13 +140,26 @@ async function activateDriver(id) {
 
 /** Fetch all active drivers (in the matching pool). Returns {id, name, email, phone, vehicle_type, city}. */
 async function getActiveDrivers() {
-  const { rows } = await db.query(
-    `SELECT id, name, email, phone, vehicle_type, city
-     FROM driver_applications
-     WHERE status = 'active'
-     ORDER BY reviewed_at DESC, created_at ASC`
-  );
-  return rows;
+  try {
+    const { rows } = await db.query(
+      `SELECT id, name, email, phone, vehicle_type, city
+       FROM driver_applications
+       WHERE status = 'active'
+       ORDER BY reviewed_at DESC, created_at ASC`
+    );
+    return rows;
+  } catch (err) {
+    if (err && err.code === '42703') {
+      const { rows } = await db.query(
+        `SELECT id, name, email, phone, vehicle_type, city
+         FROM driver_applications
+         WHERE status = 'active'
+         ORDER BY created_at ASC`
+      );
+      return rows;
+    }
+    throw err;
+  }
 }
 
 /** Insert a test/production driver with docs and mark them active. Returns the created row. */
