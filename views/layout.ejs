@@ -3,41 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= typeof title !== 'undefined' ? title : 'Shurget - Pickup Truck Delivery' %></title>
+  <title><%= title || 'Shurget - Pickup Truck Delivery' %></title>
   <link rel="stylesheet" href="/css/theme.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <nav>
     <a href="/" class="nav-logo">
-      <img src="/images/shurget-logo.png" alt="Shurget" style="height: 52px;">
+      <img src="/images/shurget-logo.png" alt="Shurget" style="height: 68px; width: auto;">
     </a>
-    <div>
-      <a href="/book" class="btn-primary">Book a Haul</a>
+    <div class="nav-links">
+      <a href="/book">Book a Haul</a>
       <a href="/drive">Become a Driver</a>
+      <a href="/partners">For Businesses</a>
     </div>
   </nav>
 
-  <!-- Dynamic Hero Section -->
+  <!-- Hero -->
   <header class="hero">
     <div class="hero-content">
-      <h1>Need a Pickup Truck?</h1>
-      <p class="hero-subtitle">Same-day delivery for anything that won't fit in your car.<br>
-      Sofas, furniture, appliances, Marketplace hauls — we've got you.</p>
-      <a href="/book" class="btn-primary hero-btn">Book a Haul Now</a>
+      <h1>Anything. Anytime. Anywhere.</h1>
+      <p class="hero-subtitle">Same-day pickup truck delivery for items that don't fit in your car.</p>
+      <a href="/book" class="btn-primary hero-btn">Book a Haul Now →</a>
     </div>
   </header>
 
   <div class="main-content">
-    <%- typeof body !== 'undefined' ? body : '' %>
+    <%- body %>
   </div>
 
-  <footer style="background:#111; color:#aaa; text-align:center; padding: 40px 20px; margin-top: 80px;">
+  <footer>
     <p>&copy; 2026 Shurget. All Rights Reserved.</p>
     <p>
-      <a href="/terms" style="color:#aaa; margin: 0 10px;">Terms</a>
-      <a href="/privacy" style="color:#aaa; margin: 0 10px;">Privacy</a>
-      <a href="/contact" style="color:#aaa; margin: 0 10px;">Contact</a>
+      <a href="/terms">Terms</a> • 
+      <a href="/privacy">Privacy</a> • 
+      <a href="/contact">Contact</a>
     </p>
   </footer>
 </body>
