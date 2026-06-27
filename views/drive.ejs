@@ -770,7 +770,7 @@
 
   <script>
     // ─── GA4 Events ─────────────────────────────────────────────
-    const GA4_ID = '<%= ga4Id %>';
+    const GA4_ID = '<%= typeof ga4Id !== "undefined" ? ga4Id : "" %>';
     function ga4Event(name, params = {}) {
       if (typeof gtag !== 'undefined') {
         gtag('event', name, params);
