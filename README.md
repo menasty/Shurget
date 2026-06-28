@@ -11,7 +11,7 @@ migration runner, Render deployment config.
 ## Environment Variables
 
 - `DATABASE_URL` — PostgreSQL connection string (required)
-- `PORT` — Server port (default: 3000)
+- `PORT` — Server port (default: 1000)
 
 ## Endpoints
 
