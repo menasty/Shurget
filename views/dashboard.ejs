@@ -280,8 +280,6 @@
   </style>
 </head>
 <body>
-  <% const safeEmail = typeof email !== 'undefined' ? email : ''; %>
-  <% const safeOrders = Array.isArray(typeof orders !== 'undefined' ? orders : null) ? orders : []; %>
   <nav class="dash-nav">
     <a href="/" class="nav-logo">
       <img src="/images/shurget-logo.png" alt="Shurget" height="48" style="vertical-align: middle;">
@@ -308,14 +306,14 @@
           type="email"
           name="email"
           placeholder="Enter your email address"
-          value="<%= safeEmail %>"
+          value="<%= email %>"
           required
         >
         <button type="submit" class="btn-lookup">Look Up</button>
       </form>
     </div>
 
-    <% if (safeEmail) { %>
+    <% if (email) { %>
 
       <!-- Referral section — loaded via JS, shown only if customer has a code -->
       <div id="referral-section" style="display:none;background:var(--white);border:1.5px solid var(--gray-light);border-radius:12px;padding:1.5rem;margin-bottom:1.75rem;">
@@ -343,21 +341,21 @@
         <div style="font-size:0.78rem;color:var(--gray-mid);">No purchase required from your friend to share. $20 credit posts after their first completed delivery.</div>
       </div>
 
-      <% if (safeOrders.length === 0) { %>
+      <% if (orders.length === 0) { %>
         <div class="empty-state">
           <div class="empty-state-icon">📦</div>
           <h2>No orders found</h2>
-          <p>We couldn't find any orders for <strong><%= safeEmail %></strong>.<br>Try a different email or make a new booking.</p>
+          <p>We couldn't find any orders for <strong><%= email %></strong>.<br>Try a different email or make a new booking.</p>
           <br>
           <a href="/book" class="btn-lookup" style="display:inline-block;text-decoration:none;">Make a Booking</a>
         </div>
       <% } else { %>
         <div class="section-header">
-          <span><%= safeOrders.length %> <%= safeOrders.length === 1 ? 'Order' : 'Orders' %> Found</span>
+          <span><%= orders.length %> <%= orders.length === 1 ? 'Order' : 'Orders' %> Found</span>
         </div>
 
         <div class="orders-list">
-          <% for (const order of safeOrders) { %>
+          <% for (const order of orders) { %>
             <div class="order-card" href="/confirmation/<%= order.id %>">
               <div class="order-card-top">
                 <div class="order-card-info">
@@ -411,11 +409,11 @@
     <% } %>
   </div>
 
-  <% if (safeEmail) { %>
+  <% if (email) { %>
   <script>
     (async function loadReferralStats() {
       try {
-        const r = await fetch('/api/referral/stats?email=' + encodeURIComponent('<%= safeEmail %>'));
+        const r = await fetch('/api/referral/stats?email=' + encodeURIComponent('<%= email %>'));
         if (!r.ok) return;
         const data = await r.json();
         if (!data.code) return;
