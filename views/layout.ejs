@@ -29,7 +29,7 @@
   </header>
 
   <div class="main-content">
-    <%- body || content || '' %>
+    <%- typeof body !== 'undefined' ? body : (typeof content !== 'undefined' ? content : '') %>
   </div>
 
   <footer>
