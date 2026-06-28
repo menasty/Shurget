@@ -93,6 +93,9 @@ app.use('/api/reviews', reviews);
 // Inbound SMS (Twilio webhook)
 app.use('/api/sms', require('./routes/sms'));
 
+// Test email route — verify Postmark connectivity without a real booking
+app.use('/api/test-email', require('./routes/test-email'));
+
 // SEO landing pages (mounted at root)
 app.use('/', require('./routes/seo'));
 
