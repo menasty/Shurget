@@ -99,11 +99,12 @@
       const item = document.getElementById('itemType').value;
       const helpers = parseInt(document.getElementById('helpers').value) || 0;
       
-      let base = 89;
-      if (['appliance','building'].includes(item)) base = 119;
-      else if (item === 'furniture') base = 89;
-      else if (item === 'mattress') base = 79;
-      
+      const PRICES = {
+        furniture: 89, mattress: 79, appliance: 119, building: 99,
+        landscaping: 79, moving: 59, marketplace: 69, retail: 69, other: 49
+      };
+      const base = PRICES[item] || 49;
+
       const total = base + (helpers * 25);
       document.getElementById('price-estimate').textContent = '$' + total.toFixed(2);
     }

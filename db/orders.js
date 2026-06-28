@@ -4,59 +4,34 @@
 
 const db = require('./index');
 
-// Item type base prices in dollars
+// Category base prices in dollars (matches booking form itemType categories)
 const BASE_PRICES = {
-  // Furniture
-  sofa:             49,
-  armchair:         45,
-  mirror:           39,
-  'dining-table':   59,
-  desk:             45,
-  bookshelf:        55,
-  'bed-frame':      55,
-  dresser:          59,
-  nightstand:       35,
-  mattress:         45,
-  // Appliances
-  refrigerator:     69,
-  'washer-dryer':   65,
-  'oven-range':     55,
-  dishwasher:       55,
-  // Large Electronics
-  tv:               39,
-  'exercise-equipment': 55,
-  // Outdoor
-  grill:            45,
-  'hot-tub':        95,
-  'patio-furniture': 55,
-  shed:             125,
-  // Other
-  piano:            65,
-  safe:             35,
-  trampoline:       75,
-  'large-boxes':    45,
-  other:            49,
+  furniture:    89,
+  mattress:     79,
+  appliance:    119,
+  building:     99,
+  landscaping:  79,
+  moving:       59,
+  marketplace:  69,
+  retail:       69,
+  other:        49,
 };
 
-const FEE_RATE = 0.15; // 15% service fee
-const HELPER_PRICES = { 0: 0, 1: 25, 2: 45 }; // per-job helper fees
+const FEE_RATE = 0.15;
+const HELPER_PRICES = { 0: 0, 1: 25, 2: 45 };
 
-/**
- * Calculate price based on item type, estimated distance, and helpers.
- * Returns detailed breakdown: priceBaseRate, priceDistance, priceHelpers, priceBase, priceFee, priceTotal
- */
 function calculatePrice(itemType, distanceMiles, helpers = 0) {
   const baseRate = BASE_PRICES[itemType] ?? 49;
   const distanceCharge = Math.round(distanceMiles * 1.50 * 100) / 100;
   const helperFee = HELPER_PRICES[helpers] ?? 0;
   const subtotal = baseRate + distanceCharge + helperFee;
-  const fee = subtotal * FEE_RATE;
+  const fee = Math.round(subtotal * FEE_RATE * 100) / 100;
   return {
     priceBaseRate: baseRate,
     priceDistance: distanceCharge,
     priceHelpers:  helperFee,
     priceBase:     Math.round(subtotal * 100) / 100,
-    priceFee:      Math.round(fee * 100) / 100,
+    priceFee:      fee,
     priceTotal:    Math.round((subtotal + fee) * 100) / 100,
   };
 }
