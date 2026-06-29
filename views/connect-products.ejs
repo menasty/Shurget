@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — Shurget Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #0F0F0F; color: #fff; min-height: 100vh; }
+    header { background: #1A1A1A; border-bottom: 1px solid rgba(255,255,255,.08); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.75rem; letter-spacing: .12em; color: #fff; text-decoration: none; }
+    nav a { color: rgba(255,255,255,.5); text-decoration: none; font-size: .85rem; font-weight: 600; margin-left: 1.5rem; }
+    nav a:hover, nav a.active { color: #ea580c; }
+    .page { max-width: 700px; margin: 2rem auto; padding: 0 1.5rem; }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: .05em; margin-bottom: .25rem; }
+    .sub { color: rgba(255,255,255,.45); font-size: .875rem; margin-bottom: 2rem; }
+    .flash { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); color: #22C55E; border-radius: 8px; padding: .875rem 1rem; margin-bottom: 1.5rem; font-size: .875rem; }
+    .error-box { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #f87171; border-radius: 8px; padding: .875rem 1rem; margin-bottom: 1.5rem; font-size: .875rem; }
+    .card { background: #1A1A1A; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem; }
+    .card-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .15em; color: #ea580c; margin-bottom: 1.25rem; }
+    .form-group { display: flex; flex-direction: column; gap: .375rem; margin-bottom: 1.125rem; }
+    label { font-size: .75rem; font-weight: 600; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .08em; }
+    input, select, textarea { padding: .75rem 1rem; background: #0F0F0F; border: 1.5px solid rgba(255,255,255,.12); border-radius: 8px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: .9rem; outline: none; transition: border-color .15s; width: 100%; }
+    input:focus, select:focus, textarea:focus { border-color: #ea580c; }
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,.25); }
+    select option { background: #1A1A1A; }
+    textarea { resize: vertical; min-height: 80px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: .875rem; }
+    .btn { display: block; width: 100%; padding: .875rem; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 700; cursor: pointer; background: #ea580c; color: #fff; transition: background .15s; margin-top: .5rem; }
+    .btn:hover { background: #d14a00; }
+    .no-accounts { background: rgba(234,88,4,.08); border: 1px solid rgba(234,88,4,.2); border-radius: 8px; padding: 1rem 1.25rem; font-size: .875rem; color: rgba(255,255,255,.6); }
+    .no-accounts a { color: #ea580c; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="/" class="logo">Shurget</a>
+  <nav>
+    <a href="/connect">Accounts</a>
+    <a href="/connect/products" class="active">Products</a>
+    <a href="/connect/storefront">Storefront</a>
+  </nav>
+</header>
+
+<div class="page">
+  <h1>Create Product</h1>
+  <p class="sub">Products are created at the platform level. Revenue is split between the platform (15% fee) and the seller at checkout.</p>
+
+  <% if (flash) { %><div class="flash"><%= flash %></div><% } %>
+  <% if (error) { %><div class="error-box">Error: <%= error %></div><% } %>
+
+  <% if (accounts.length === 0) { %>
+  <div class="no-accounts">
+    No connected accounts yet. <a href="/connect">Create a connected account first →</a>
+  </div>
+  <% } else { %>
+  <div class="card">
+    <div class="card-title">New Product</div>
+    <form method="POST" action="/connect/products">
+
+      <div class="form-group">
+        <label for="name">Product Name</label>
+        <input type="text" id="name" name="name" placeholder="e.g. Furniture Haul — Denver" required />
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description (optional)</label>
+        <textarea id="description" name="description" placeholder="What's included in this service…"></textarea>
+      </div>
+
+      <div class="row2">
+        <div class="form-group">
+          <label for="priceInDollars">Price (USD)</label>
+          <input type="number" id="priceInDollars" name="priceInDollars" placeholder="89.00" min="0.50" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label for="localAccountId">Seller (Connected Account)</label>
+          <select id="localAccountId" name="localAccountId" required>
+            <option value="">Select seller…</option>
+            <% for (const acct of accounts) { %>
+            <option value="<%= acct.localId %>"><%= acct.displayName %> — <%= acct.email %></option>
+            <% } %>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Create Product</button>
+    </form>
+  </div>
+  <% } %>
+</div>
+</body>
+</html>

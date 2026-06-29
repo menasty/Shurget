@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Successful — Shurget</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #0F0F0F; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .card { background: #1A1A1A; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 3rem 2.5rem; max-width: 460px; width: 100%; text-align: center; }
+    .icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: .05em; color: #22C55E; margin-bottom: .5rem; }
+    .sub { color: rgba(255,255,255,.5); font-size: .9rem; line-height: 1.6; margin-bottom: 2rem; }
+    .detail-row { display: flex; justify-content: space-between; align-items: center; padding: .75rem 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: .875rem; }
+    .detail-label { color: rgba(255,255,255,.4); }
+    .detail-value { font-weight: 600; }
+    .detail-value.green { color: #22C55E; }
+    .actions { display: flex; gap: .875rem; margin-top: 2rem; }
+    .btn { flex: 1; padding: .875rem; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; }
+    .btn-primary { background: #ea580c; color: #fff; }
+    .btn-primary:hover { background: #d14a00; }
+    .btn-secondary { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.12); }
+    .btn-secondary:hover { background: rgba(255,255,255,.12); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">✅</div>
+    <h1>Payment Complete</h1>
+    <p class="sub">Your payment was processed successfully. The seller will be notified and funds will be transferred automatically.</p>
+
+    <% if (session) { %>
+    <% const item = session.line_items?.data?.[0]; %>
+    <% if (item) { %>
+    <div class="detail-row">
+      <span class="detail-label">Item</span>
+      <span class="detail-value"><%= item.description %></span>
+    </div>
+    <% } %>
+    <div class="detail-row">
+      <span class="detail-label">Amount Paid</span>
+      <span class="detail-value green">$<%= ((session.amount_total || 0) / 100).toFixed(2) %> <%= (session.currency || 'usd').toUpperCase() %></span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Status</span>
+      <span class="detail-value"><%= session.payment_status %></span>
+    </div>
+    <div class="detail-row" style="border-bottom: none;">
+      <span class="detail-label">Session ID</span>
+      <span class="detail-value" style="font-family: monospace; font-size: .72rem; color: rgba(255,255,255,.3);"><%= session.id?.slice(0, 20) %>…</span>
+    </div>
+    <% } %>
+
+    <div class="actions">
+      <a href="/connect/storefront" class="btn btn-secondary">← Back to Store</a>
+      <a href="/" class="btn btn-primary">Go Home</a>
+    </div>
+  </div>
+</body>
+</html>

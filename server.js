@@ -96,6 +96,11 @@ app.use('/api/sms', require('./routes/sms'));
 // Test email route — verify Postmark connectivity without a real booking
 app.use('/api/test-email', require('./routes/test-email'));
 
+// Stripe Connect V2 integration — onboarding, products, storefront, checkout
+// Webhook endpoint is mounted inside the router at /api/connect/webhook
+app.use('/connect', require('./routes/connect'));
+app.use('/api/connect', require('./routes/connect'));
+
 // SEO landing pages (mounted at root)
 app.use('/', require('./routes/seo'));
 

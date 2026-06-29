@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect — Shurget Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #0F0F0F; color: #fff; min-height: 100vh; }
+    header { background: #1A1A1A; border-bottom: 1px solid rgba(255,255,255,.08); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.75rem; letter-spacing: .12em; color: #fff; text-decoration: none; }
+    nav a { color: rgba(255,255,255,.5); text-decoration: none; font-size: .85rem; font-weight: 600; margin-left: 1.5rem; }
+    nav a:hover, nav a.active { color: #ea580c; }
+    .page { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: .05em; margin-bottom: .25rem; }
+    .sub { color: rgba(255,255,255,.45); font-size: .875rem; margin-bottom: 2rem; }
+    .flash { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); color: #22C55E; border-radius: 8px; padding: .875rem 1rem; margin-bottom: 1.5rem; font-size: .875rem; }
+    .error-box { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #f87171; border-radius: 8px; padding: .875rem 1rem; margin-bottom: 1.5rem; font-size: .875rem; }
+    /* Create account card */
+    .card { background: #1A1A1A; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 1.75rem; margin-bottom: 2rem; }
+    .card-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .15em; color: #ea580c; margin-bottom: 1.25rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: .875rem; align-items: end; }
+    .form-group { display: flex; flex-direction: column; gap: .375rem; }
+    label { font-size: .75rem; font-weight: 600; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .08em; }
+    input { padding: .75rem 1rem; background: #0F0F0F; border: 1.5px solid rgba(255,255,255,.12); border-radius: 8px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: .9rem; outline: none; transition: border-color .15s; }
+    input:focus { border-color: #ea580c; }
+    input::placeholder { color: rgba(255,255,255,.25); }
+    .btn { padding: .75rem 1.5rem; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 700; cursor: pointer; transition: background .15s; white-space: nowrap; }
+    .btn-primary { background: #ea580c; color: #fff; }
+    .btn-primary:hover { background: #d14a00; }
+    .btn-sm { padding: .5rem 1rem; font-size: .8rem; }
+    /* Accounts table */
+    .section-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .15em; color: rgba(255,255,255,.4); margin-bottom: .875rem; }
+    .account-row { background: #1A1A1A; border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 1.125rem 1.25rem; display: flex; align-items: center; gap: 1rem; margin-bottom: .75rem; flex-wrap: wrap; }
+    .acct-info { flex: 1; }
+    .acct-name { font-weight: 700; font-size: .95rem; margin-bottom: .2rem; }
+    .acct-meta { font-size: .78rem; color: rgba(255,255,255,.4); }
+    .acct-id { font-size: .72rem; font-family: monospace; color: rgba(255,255,255,.3); margin-top: .2rem; }
+    .pill { display: inline-flex; padding: .25rem .7rem; border-radius: 99px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+    .pill.active { background: rgba(34,197,94,.15); color: #22C55E; }
+    .pill.pending_approval { background: rgba(250,204,21,.15); color: #FACC15; }
+    .pill.onboarding_incomplete { background: rgba(234,88,4,.15); color: #ea580c; }
+    .pill.error { background: rgba(239,68,68,.15); color: #f87171; }
+    .pill.unknown { background: rgba(255,255,255,.08); color: rgba(255,255,255,.4); }
+    .empty { text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,.3); }
+    .empty-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="/" class="logo">Shurget</a>
+  <nav>
+    <a href="/connect" class="active">Accounts</a>
+    <a href="/connect/products">Products</a>
+    <a href="/connect/storefront">Storefront</a>
+  </nav>
+</header>
+
+<div class="page">
+  <h1>Connect Dashboard</h1>
+  <p class="sub">Create and onboard connected accounts. The platform collects fees — drivers receive payouts.</p>
+
+  <% if (flash) { %><div class="flash"><%= flash %></div><% } %>
+  <% if (error) { %><div class="error-box">Error: <%= error %></div><% } %>
+
+  <!-- ── Create Connected Account ── -->
+  <div class="card">
+    <div class="card-title">Create Connected Account</div>
+    <form method="POST" action="/connect/accounts">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="displayName">Driver / Business Name</label>
+          <input type="text" id="displayName" name="displayName" placeholder="Jane Smith" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="jane@example.com" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Create Account</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ── Connected Accounts List ── -->
+  <div class="section-label">Connected Accounts (<%= accounts.length %>)</div>
+
+  <% if (accounts.length === 0) { %>
+  <div class="empty">
+    <div class="empty-icon">🔗</div>
+    <div>No connected accounts yet. Create one above to get started.</div>
+  </div>
+  <% } else { %>
+    <% for (const acct of accounts) { %>
+    <div class="account-row">
+      <div class="acct-info">
+        <div class="acct-name"><%= acct.displayName %></div>
+        <div class="acct-meta"><%= acct.email %></div>
+        <div class="acct-id"><%= acct.stripeAccountId %></div>
+      </div>
+      <span class="pill <%= acct.status %>">
+        <% if (acct.status === 'active') { %>✓ Active
+        <% } else if (acct.status === 'pending_approval') { %>⏳ Pending Approval
+        <% } else if (acct.status === 'onboarding_incomplete') { %>⚠ Onboarding Incomplete
+        <% } else if (acct.status === 'error') { %>✕ Error
+        <% } else { %>Unknown<% } %>
+      </span>
+      <% if (acct.status !== 'active') { %>
+      <form method="POST" action="/connect/accounts/<%= acct.localId %>/onboard" style="display:inline">
+        <button type="submit" class="btn btn-primary btn-sm">
+          <% if (acct.status === 'pending_approval') { %>Refresh Onboarding<% } else { %>Onboard →<% } %>
+        </button>
+      </form>
+      <% } %>
+    </div>
+    <% } %>
+  <% } %>
+</div>
+</body>
+</html>

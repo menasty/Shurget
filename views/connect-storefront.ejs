@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Storefront — Shurget</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #0F0F0F; color: #fff; min-height: 100vh; }
+    header { background: #1A1A1A; border-bottom: 1px solid rgba(255,255,255,.08); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.75rem; letter-spacing: .12em; color: #fff; text-decoration: none; }
+    nav a { color: rgba(255,255,255,.5); text-decoration: none; font-size: .85rem; font-weight: 600; margin-left: 1.5rem; }
+    nav a:hover, nav a.active { color: #ea580c; }
+    .page { max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: .05em; margin-bottom: .25rem; }
+    .sub { color: rgba(255,255,255,.45); font-size: .875rem; margin-bottom: 2rem; }
+    .flash { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); color: #22C55E; border-radius: 8px; padding: .875rem 1rem; margin-bottom: 1.5rem; font-size: .875rem; }
+    .error-box { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #f87171; border-radius: 8px; padding: .875rem 1rem; margin-bottom: 1.5rem; font-size: .875rem; }
+    /* Product grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    .product-card { background: #1A1A1A; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: .875rem; transition: border-color .15s; }
+    .product-card:hover { border-color: rgba(234,88,4,.4); }
+    .product-name { font-weight: 700; font-size: 1rem; line-height: 1.3; }
+    .product-desc { font-size: .82rem; color: rgba(255,255,255,.45); line-height: 1.55; flex: 1; }
+    .product-seller { font-size: .72rem; color: rgba(255,255,255,.3); padding: .375rem .625rem; background: rgba(255,255,255,.04); border-radius: 6px; display: inline-block; }
+    .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: .04em; color: #ea580c; }
+    .product-fee { font-size: .72rem; color: rgba(255,255,255,.3); margin-top: -.25rem; }
+    .btn-buy { display: block; width: 100%; padding: .875rem; background: #ea580c; color: #fff; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; text-align: center; transition: background .15s; }
+    .btn-buy:hover { background: #d14a00; }
+    /* Empty */
+    .empty { text-align: center; padding: 4rem 1rem; color: rgba(255,255,255,.3); }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty a { color: #ea580c; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="/" class="logo">Shurget</a>
+  <nav>
+    <a href="/connect">Accounts</a>
+    <a href="/connect/products">Products</a>
+    <a href="/connect/storefront" class="active">Storefront</a>
+  </nav>
+</header>
+
+<div class="page">
+  <h1>Storefront</h1>
+  <p class="sub">Browse available services. Payments go directly to the seller — platform retains a 15% fee.</p>
+
+  <% if (flash) { %><div class="flash"><%= flash %></div><% } %>
+  <% if (typeof error !== 'undefined' && error) { %><div class="error-box">Error: <%= error %></div><% } %>
+
+  <% if (!products || products.length === 0) { %>
+  <div class="empty">
+    <div class="empty-icon">🛒</div>
+    <div>No products yet. <a href="/connect/products">Create a product →</a></div>
+  </div>
+  <% } else { %>
+  <div class="grid">
+    <% for (const p of products) { %>
+    <div class="product-card">
+      <div>
+        <div class="product-name"><%= p.name %></div>
+        <% if (p.description) { %>
+        <div class="product-desc"><%= p.description %></div>
+        <% } %>
+      </div>
+      <% if (p.metadata?.seller_name) { %>
+      <span class="product-seller">By <%= p.metadata.seller_name %></span>
+      <% } %>
+      <div>
+        <div class="product-price">
+          $<%= p.default_price?.unit_amount ? (p.default_price.unit_amount / 100).toFixed(2) : '—' %>
+        </div>
+        <div class="product-fee">Platform fee (15%) applied at checkout</div>
+      </div>
+      <form method="POST" action="/connect/checkout">
+        <input type="hidden" name="productId" value="<%= p.id %>" />
+        <button type="submit" class="btn-buy">Buy Now →</button>
+      </form>
+    </div>
+    <% } %>
+  </div>
+  <% } %>
+</div>
+</body>
+</html>
