@@ -64,25 +64,14 @@
 
 <% if (driver) { %>
 <nav class="nav">
-  <a class="nav-link" href="/driver/jobs?email=<%= encodeURIComponent(driverEmail || '') %>">Jobs</a>
-  <a class="nav-link" href="/driver/earnings?email=<%= encodeURIComponent(driverEmail || '') %>">Earnings</a>
-  <a class="nav-link active" href="/driver/disputes?email=<%= encodeURIComponent(driverEmail || '') %>">Disputes</a>
+  <a class="nav-link" href="/driver/jobs">Jobs</a>
+  <a class="nav-link" href="/driver/earnings">Earnings</a>
+  <a class="nav-link active" href="/driver/disputes">Disputes</a>
 </nav>
 <% } %>
 
 <div class="page">
-  <% if (!driver) { %>
-  <!-- Email gate -->
-  <div class="gate-card">
-    <div class="gate-icon">📋</div>
-    <h2>My Disputes</h2>
-    <p>Enter the email you use to sign in to the driver portal.</p>
-    <div class="gate-form">
-      <input class="gate-input" type="email" id="gate-email" placeholder="driver@example.com" autocomplete="email" value="<%= driverEmail || '' %>">
-      <button class="btn-gate" onclick="loginDriver()">View Disputes</button>
-    </div>
-  </div>
-  <% } else if (disputes.length === 0) { %>
+  <% if (disputes.length === 0) { %>
   <div class="empty-state">
     <div class="empty-icon">📋</div>
     <div class="empty-title">No Disputes</div>
@@ -130,12 +119,6 @@
   <% } %>
 </div>
 
-<script>
-  function loginDriver() {
-    const email = document.getElementById('gate-email').value.trim();
-    if (!email) return;
-    location.href = '/driver/disputes?email=' + encodeURIComponent(email);
-  }
-</script>
+
 </body>
 </html>

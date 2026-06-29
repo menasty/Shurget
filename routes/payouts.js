@@ -53,7 +53,11 @@ function baseUrl(req) {
 // GET /driver/payouts — payout connection page
 router.get('/driver/payouts', requireDriver, async (req, res) => {
   const status = await getAccountStatus(req.driver.stripe_account_id).catch(() => 'not_connected');
-  res.render('driver-payouts', { driver: req.driver, payoutStatus: status });
+  res.render('driver-payouts', {
+    driver:       req.driver,
+    payoutStatus: status,
+    connected:    req.query.connected === '1',
+  });
 });
 
 // GET /driver/earnings — earnings history

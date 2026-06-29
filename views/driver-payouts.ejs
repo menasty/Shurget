@@ -56,7 +56,7 @@
   <h1>Payout Setup</h1>
   <p class="sub">Connect your bank account via Stripe so Shurget can automatically pay you 85% of every completed delivery.</p>
 
-  <% if (typeof query !== 'undefined' && query && query.connected === '1') { %>
+  <% if (locals.connected) { %>
   <div class="success-box">✅ Bank account connected! You're ready to receive payouts after completed deliveries.</div>
   <% } %>
 
@@ -90,8 +90,8 @@
   <% } %>
 
   <div class="nav-links">
-    <a href="/driver/earnings?email=<%= encodeURIComponent(email) %>">View Earnings →</a>
-    <a href="/driver/jobs?email=<%= encodeURIComponent(email) %>">← Back to Jobs</a>
+    <a href="/driver/earnings">View Earnings →</a>
+    <a href="/driver/jobs">← Back to Jobs</a>
   </div>
 </div>
 
@@ -101,7 +101,7 @@ async function startConnect() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>Setting up…';
   try {
-    const res = await fetch('/api/driver/payouts/connect?email=<%= encodeURIComponent(email) %>', {
+    const res = await fetch('/api/driver/payouts/connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });

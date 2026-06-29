@@ -83,7 +83,7 @@
   </div>
 
   <% if (!driver.stripe_account_id) { %>
-  <a href="/driver/payouts?email=<%= encodeURIComponent(email) %>" class="payout-cta">
+  <a href="/driver/payouts" class="payout-cta">
     🔗 Connect bank account to enable automatic payouts →
   </a>
   <% } %>
@@ -118,8 +118,8 @@
   <% } %>
 
   <div class="nav-links">
-    <a href="/driver/payouts?email=<%= encodeURIComponent(email) %>">Payout Setup →</a>
-    <a href="/driver/jobs?email=<%= encodeURIComponent(email) %>">← Back to Jobs</a>
+    <a href="/driver/payouts">Payout Setup →</a>
+    <a href="/driver/jobs">← Back to Jobs</a>
   </div>
 </div>
 </body>
