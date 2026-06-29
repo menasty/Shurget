@@ -1,52 +1,144 @@
-const express = require('express');
-const router = express.Router();
+// routes/driver.js — Driver portal with session-based login
+// Auth: email + last 4 digits of phone. Session stored in signed cookie (shared COOKIE_SECRET).
+
+const express  = require('express');
+const crypto   = require('crypto');
+const router   = express.Router();
 const { getDriverByEmail } = require('../db/drivers');
 const { getAvailableJobs, acceptJob, declineJob, getMyJobs } = require('../db/orders');
 
-// Simple driver auth middleware
+// ─── Session helpers (driver-scoped, separate from admin sessions) ────────────
+const DRIVER_SESSIONS  = new Map(); // sessionId -> { driverId, email, createdAt }
+const DRIVER_COOKIE    = 'dr_session';
+const SESSION_TTL_MS   = 12 * 60 * 60 * 1000; // 12 hours
+const COOKIE_SECRET    = process.env.COOKIE_SECRET || crypto.randomBytes(32).toString('hex');
+
+function signId(id) {
+  const hmac = crypto.createHmac('sha256', COOKIE_SECRET);
+  hmac.update(id);
+  return id + '.' + hmac.digest('base64url');
+}
+
+function unsignId(cookie) {
+  if (!cookie || typeof cookie !== 'string') return null;
+  const dot = cookie.lastIndexOf('.');
+  if (dot === -1) return null;
+  const id  = cookie.slice(0, dot);
+  const sig = cookie.slice(dot + 1);
+  const expected = signId(id).split('.').pop();
+  if (sig !== expected) return null;
+  return id;
+}
+
+function createDriverSession(driverId, email) {
+  const id = crypto.randomBytes(32).toString('base64url');
+  DRIVER_SESSIONS.set(id, { driverId, email, createdAt: Date.now() });
+  return id;
+}
+
+function getDriverSession(cookie) {
+  const id = unsignId(cookie);
+  if (!id) return null;
+  const sess = DRIVER_SESSIONS.get(id);
+  if (!sess) return null;
+  if (Date.now() - sess.createdAt > SESSION_TTL_MS) {
+    DRIVER_SESSIONS.delete(id);
+    return null;
+  }
+  return { id, ...sess };
+}
+
+function setDriverCookie(res, sessionId) {
+  res.cookie(DRIVER_COOKIE, signId(sessionId), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure:   process.env.NODE_ENV === 'production',
+    maxAge:   SESSION_TTL_MS,
+  });
+}
+
+// ─── Auth middleware ──────────────────────────────────────────────────────────
 async function requireDriver(req, res, next) {
-  const email = req.query.email || req.body.email;
-  if (!email) {
-    return res.status(401).send('Driver email required. Use ?email=...');
-  }
-  const driver = await getDriverByEmail(email);
+  const sess = getDriverSession(req.cookies?.[DRIVER_COOKIE]);
+  if (!sess) return res.redirect('/driver/login');
+
+  const driver = await getDriverByEmail(sess.email).catch(() => null);
   if (!driver) {
-    return res.status(401).send('Driver not found or not approved.');
+    res.clearCookie(DRIVER_COOKIE);
+    return res.redirect('/driver/login?error=Account+not+found');
   }
-  req.driver = driver;
+
+  req.driver    = driver;
+  req.driverSess = sess;
   next();
 }
 
-router.use(requireDriver);
+// ─── Login routes (public) ────────────────────────────────────────────────────
 
-// Available jobs for drivers
-router.get('/jobs', async (req, res) => {
+// GET /driver/login
+router.get('/login', (req, res) => {
+  const error = req.query.error || null;
+  res.render('driver-login', { error });
+});
+
+// POST /driver/login
+router.post('/login', async (req, res) => {
+  const email = (req.body.email || '').trim().toLowerCase();
+  const pin   = (req.body.pin   || '').trim();
+
+  if (!email || !pin || pin.length !== 4) {
+    return res.render('driver-login', { error: 'Please enter your email and 4-digit phone PIN.' });
+  }
+
+  const driver = await getDriverByEmail(email).catch(() => null);
+
+  // Validate: driver must exist, be active, and phone must end with the pin
+  const phone      = (driver?.phone || '').replace(/\D/g, ''); // digits only
+  const pinMatches = phone.endsWith(pin);
+
+  if (!driver || !pinMatches) {
+    return res.render('driver-login', { error: 'Email or PIN incorrect. Use the last 4 digits of your phone number.' });
+  }
+
+  const sessionId = createDriverSession(driver.id, driver.email);
+  setDriverCookie(res, sessionId);
+  res.redirect('/driver/jobs');
+});
+
+// POST /driver/logout
+router.post('/logout', (req, res) => {
+  const sess = getDriverSession(req.cookies?.[DRIVER_COOKIE]);
+  if (sess) DRIVER_SESSIONS.delete(sess.id);
+  res.clearCookie(DRIVER_COOKIE);
+  res.redirect('/driver/login');
+});
+
+// ─── Protected routes (require login) ────────────────────────────────────────
+
+// GET /driver/jobs — available jobs
+router.get('/jobs', requireDriver, async (req, res) => {
   try {
     const jobs = await getAvailableJobs();
-    res.render('driver-jobs', { 
-      jobs, 
-      driver: req.driver 
-    });
+    res.render('driver-jobs', { jobs, driver: req.driver });
   } catch (e) {
+    console.error('[driver] getAvailableJobs:', e.message);
     res.render('driver-jobs', { jobs: [], driver: req.driver });
   }
 });
 
-// My accepted jobs
-router.get('/my-jobs', async (req, res) => {
+// GET /driver/my-jobs — accepted/in-progress jobs for this driver
+router.get('/my-jobs', requireDriver, async (req, res) => {
   try {
     const jobs = await getMyJobs(req.driver.id);
-    res.render('driver-my-jobs', { 
-      jobs, 
-      driver: req.driver 
-    });
+    res.render('driver-my-jobs', { jobs, driver: req.driver });
   } catch (e) {
+    console.error('[driver] getMyJobs:', e.message);
     res.render('driver-my-jobs', { jobs: [], driver: req.driver });
   }
 });
 
-// Accept a job
-router.post('/jobs/:id/accept', async (req, res) => {
+// POST /driver/jobs/:id/accept
+router.post('/jobs/:id/accept', requireDriver, async (req, res) => {
   try {
     const order = await acceptJob(req.params.id, req.driver.id, req.driver.name, req.driver.phone);
     if (order) {
@@ -55,16 +147,18 @@ router.post('/jobs/:id/accept', async (req, res) => {
       res.status(409).json({ error: 'Job no longer available' });
     }
   } catch (err) {
+    console.error('[driver] acceptJob:', err.message);
     res.status(500).json({ error: 'Failed to accept job' });
   }
 });
 
-// Decline a job
-router.post('/jobs/:id/decline', async (req, res) => {
+// POST /driver/jobs/:id/decline
+router.post('/jobs/:id/decline', requireDriver, async (req, res) => {
   try {
     await declineJob(req.params.id, req.driver.id);
     res.json({ success: true });
   } catch (err) {
+    console.error('[driver] declineJob:', err.message);
     res.status(500).json({ error: 'Failed to decline job' });
   }
 });

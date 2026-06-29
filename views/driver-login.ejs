@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Driver Login — Shurget</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .logo span { color: #f59e0b; }
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 28px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-bottom: 18px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus { border-color: #f59e0b; }
+    .hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: -14px;
+      margin-bottom: 18px;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      background: #f59e0b;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: #d97706; }
+    .error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+    .apply-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #999;
+    }
+    .apply-link a { color: #f59e0b; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">Shur<span>get</span></div>
+    <div class="subtitle">Driver Portal — Sign in to view jobs</div>
+
+    <% if (locals.error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="/driver/login">
+      <label for="email">Email address</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        required
+      />
+
+      <label for="pin">Last 4 digits of your phone</label>
+      <input
+        type="text"
+        id="pin"
+        name="pin"
+        placeholder="e.g. 4521"
+        maxlength="4"
+        pattern="\d{4}"
+        inputmode="numeric"
+        autocomplete="off"
+        required
+      />
+      <p class="hint">The phone number you used when applying</p>
+
+      <button type="submit">Sign In</button>
+    </form>
+
+    <div class="apply-link">
+      Not a driver yet? <a href="/drive">Apply now</a>
+    </div>
+  </div>
+</body>
+</html>
