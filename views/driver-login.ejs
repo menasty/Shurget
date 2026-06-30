@@ -4,136 +4,225 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Driver Login — Shurget</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #111111;
+      font-family: 'DM Sans', sans-serif;
+      background: #0a0a0a;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 2rem 1.5rem;
+      position: relative;
+      overflow: hidden;
     }
-    .card {
-      background: #1c1c1c;
-      border-radius: 14px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-      padding: 40px 36px;
+
+    /* Orange glow */
+    body::before {
+      content: '';
+      position: fixed;
+      bottom: -100px;
+      right: -100px;
+      width: 600px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(234,88,12,.11) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .login-wrap {
+      position: relative;
+      z-index: 1;
       width: 100%;
       max-width: 400px;
-      border: 1px solid #2a2a2a;
     }
-    .logo-wrap {
+
+    /* Brand mark */
+    .login-brand {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 1.75rem;
     }
-    .logo-wrap img {
-      height: 64px;
+    .login-brand-img {
+      height: 52px;
       width: auto;
       object-fit: contain;
+      filter: brightness(1);
     }
-    .subtitle {
-      font-size: 14px;
-      color: #888;
-      margin-bottom: 28px;
-      text-align: center;
-    }
-    label {
-      display: block;
-      font-size: 13px;
+    .login-brand-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: .72rem;
       font-weight: 600;
-      color: #ccc;
-      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: rgba(255,255,255,.3);
+      margin-top: .6rem;
     }
-    input {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1.5px solid #333;
-      border-radius: 8px;
-      font-size: 15px;
-      margin-bottom: 18px;
-      outline: none;
+
+    /* Card */
+    .login-card {
       background: #111;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,.55);
+    }
+
+    /* Orange top bar */
+    .login-card-bar {
+      height: 4px;
+      background: linear-gradient(90deg, #b84000, #ea580c);
+    }
+
+    .login-card-inner { padding: 2.25rem 2rem; }
+
+    .login-card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: .08em;
       color: #fff;
-      transition: border-color 0.15s;
+      margin-bottom: .2rem;
     }
-    input:focus { border-color: #ea580c; }
-    input::placeholder { color: #555; }
-    .hint {
-      font-size: 12px;
-      color: #666;
-      margin-top: -14px;
-      margin-bottom: 18px;
+    .login-card-sub {
+      font-size: .82rem;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 1.75rem;
     }
-    button {
+
+    /* Error */
+    .login-error {
+      background: rgba(220,38,38,.1);
+      border: 1px solid rgba(220,38,38,.3);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      font-size: .85rem;
+      color: #fca5a5;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Fields */
+    .field-group { margin-bottom: 1.1rem; }
+    .field-label {
+      display: block;
+      font-size: .72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: rgba(255,255,255,.45);
+      margin-bottom: .4rem;
+    }
+    .field-input {
       width: 100%;
-      padding: 13px;
-      background: #ea580c;
+      padding: .8rem 1rem;
+      background: #0a0a0a;
+      border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
       color: #fff;
-      font-size: 16px;
-      font-weight: 700;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+    }
+    .field-input::placeholder { color: rgba(255,255,255,.22); }
+    .field-input:focus {
+      border-color: #ea580c;
+      box-shadow: 0 0 0 3px rgba(234,88,12,.12);
+    }
+    .field-hint {
+      font-size: .72rem;
+      color: rgba(255,255,255,.28);
+      margin-top: .35rem;
+    }
+
+    /* Submit */
+    .login-btn {
+      width: 100%;
+      padding: .9rem;
+      background: #b84000;
+      color: #fff;
       border: none;
       border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.25rem;
+      letter-spacing: .1em;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background .2s, transform .15s;
+      margin-top: .75rem;
     }
-    button:hover { background: #d14a00; }
-    .error {
-      background: rgba(220,38,38,0.12);
-      border: 1px solid rgba(220,38,38,0.4);
-      color: #f87171;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 14px;
-      margin-bottom: 18px;
-    }
+    .login-btn:hover { background: #9e3800; transform: translateY(-1px); }
+    .login-btn:focus-visible { outline: 2px solid #ea580c; outline-offset: 2px; }
+
+    /* Apply link */
     .apply-link {
       text-align: center;
-      margin-top: 20px;
-      font-size: 13px;
-      color: #666;
+      margin-top: 1.25rem;
+      font-size: .78rem;
+      color: rgba(255,255,255,.3);
     }
-    .apply-link a { color: #ea580c; text-decoration: none; font-weight: 600; }
+    .apply-link a {
+      color: #ea580c;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .apply-link a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="logo-wrap">
-      <img src="/images/shurget-logo-decal.jpg" alt="Shurget" />
+  <div class="login-wrap">
+    <div class="login-brand">
+      <img src="/images/shurget-logo-nav.png" alt="Shurget" class="login-brand-img">
+      <div class="login-brand-label">Driver Portal</div>
     </div>
-    <div class="subtitle">Driver Portal — Sign in to view jobs</div>
 
-    <% if (locals.error) { %>
-      <div class="error"><%= error %></div>
-    <% } %>
+    <div class="login-card">
+      <div class="login-card-bar"></div>
+      <div class="login-card-inner">
+        <div class="login-card-title">Driver Sign In</div>
+        <p class="login-card-sub">Sign in to view jobs, earnings, and your schedule.</p>
 
-    <form method="POST" action="/driver/login">
-      <label for="email">Email address</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        placeholder="you@example.com"
-        autocomplete="email"
-        required
-      />
+        <% if (locals.error) { %>
+          <div class="login-error"><%= error %></div>
+        <% } %>
 
-      <label for="pin">Last 4 digits of your phone</label>
-      <input
-        type="text"
-        id="pin"
-        name="pin"
-        placeholder="e.g. 4521"
-        maxlength="4"
-        pattern="\d{4}"
-        inputmode="numeric"
-        autocomplete="off"
-        required
-      />
-      <p class="hint">The phone number you used when applying</p>
+        <form method="POST" action="/driver/login">
+          <div class="field-group">
+            <label class="field-label" for="email">Email Address</label>
+            <input
+              class="field-input"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            />
+          </div>
 
-      <button type="submit">Sign In</button>
-    </form>
+          <div class="field-group">
+            <label class="field-label" for="pin">Last 4 digits of your phone</label>
+            <input
+              class="field-input"
+              type="text"
+              id="pin"
+              name="pin"
+              placeholder="e.g. 4521"
+              maxlength="4"
+              pattern="\d{4}"
+              inputmode="numeric"
+              autocomplete="off"
+              required
+            />
+            <p class="field-hint">The number you used when applying</p>
+          </div>
+
+          <button type="submit" class="login-btn">Sign In →</button>
+        </form>
+      </div>
+    </div>
 
     <div class="apply-link">
       Not a driver yet? <a href="/drive">Apply now</a>
