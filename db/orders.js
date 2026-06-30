@@ -17,12 +17,12 @@ const BASE_PRICES = {
   other:        59,
 };
 
-const FEE_RATE = 0.18;
+const FEE_RATE = 0.20;
 const HELPER_PRICES = { 0: 0, 1: 25, 2: 45 };
 
 function calculatePrice(itemType, distanceMiles, helpers = 0) {
   const baseRate = BASE_PRICES[itemType] ?? 59;
-  const distanceCharge = Math.round(distanceMiles * 1.25 * 100) / 100;
+  const distanceCharge = Math.round(distanceMiles * 1.50 * 100) / 100;
   const helperFee = HELPER_PRICES[helpers] ?? 0;
   const subtotal = baseRate + distanceCharge + helperFee;
   const fee = Math.round(subtotal * FEE_RATE * 100) / 100;
