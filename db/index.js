@@ -36,6 +36,21 @@ function hasCompletePgConfig(pgHost, pgUser, pgDatabase) {
   return Boolean(pgHost && pgUser && pgDatabase && !isInvalidHost(pgHost));
 }
 
+/**
+ * Strip sslmode from a connection string so pg v8.11+ does not emit the
+ * "SECURITY WARNING: … treated as alias for verify-full" message.
+ * We handle SSL explicitly via the `ssl` pool config key instead.
+ */
+function stripSslMode(connectionString) {
+  try {
+    const parsed = new URL(connectionString);
+    parsed.searchParams.delete('sslmode');
+    return parsed.toString();
+  } catch (_) {
+    return connectionString;
+  }
+}
+
 function buildPoolConfig() {
   const rawDatabaseUrl = sanitizeDatabaseUrl(process.env.DATABASE_URL);
   const pgHost = normalize(process.env.PGHOST);
@@ -53,11 +68,14 @@ function buildPoolConfig() {
         if (Number.isFinite(pgPort)) {
           parsed.port = String(pgPort);
         }
+        // Strip sslmode — we set ssl explicitly below
+        parsed.searchParams.delete('sslmode');
         return { connectionString: parsed.toString() };
       }
 
       if (!isInvalidHost(parsed.hostname)) {
-        return { connectionString: rawDatabaseUrl };
+        // Strip sslmode — we set ssl explicitly below to avoid pg v8.11+ warning
+        return { connectionString: stripSslMode(rawDatabaseUrl) };
       }
 
       console.warn(`[db] Ignoring DATABASE_URL with invalid hostname: ${parsed.hostname}`);
@@ -82,24 +100,14 @@ function buildPoolConfig() {
   );
 }
 
-function shouldSetDefaultSsl(config) {
-  if (!config || !config.connectionString) {
-    return true;
-  }
-
-  try {
-    const parsed = new URL(config.connectionString);
-    return !parsed.searchParams.get('sslmode');
-  } catch (_error) {
-    // If URL parsing fails here, leave behavior unchanged and keep default SSL.
-    return true;
-  }
-}
-
 const poolConfig = buildPoolConfig();
-if (shouldSetDefaultSsl(poolConfig)) {
-  poolConfig.ssl = { rejectUnauthorized: false };
-}
+
+// Always set ssl explicitly. pg v8.11+ emits a security warning when sslmode
+// is passed via the connection string ('prefer'/'require'/'verify-ca' are all
+// treated as 'verify-full'). Setting ssl via the pool config key is the
+// correct, warning-free approach. rejectUnauthorized: true enforces full
+// certificate validation, which is what Neon and other managed PG hosts expect.
+poolConfig.ssl = { rejectUnauthorized: true };
 
 const pool = new Pool(poolConfig);
 
