@@ -12,7 +12,7 @@ function getStripe() {
   return Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
-const PLATFORM_FEE_RATE = 0.18; // 18% stays with Shurget
+const PLATFORM_FEE_RATE = 0.20; // 20% stays with Shurget
 
 /**
  * Create a Stripe Connect Express account for a driver.
@@ -70,7 +70,7 @@ async function getAccountStatus(stripeAccountId) {
 
 /**
  * Transfer driver payout for a delivered order.
- * payout = price_total * (1 - PLATFORM_FEE_RATE) = 82% of price_total, rounded to cents.
+ * payout = price_total * (1 - PLATFORM_FEE_RATE) = 80% of price_total, rounded to cents.
  * Returns { transfer, amountCents } on success; throws on failure.
  */
 async function payoutDriver(order, stripeAccountId) {
@@ -159,8 +159,8 @@ async function createPartnerAccountLink(stripeAccountId, { refreshUrl, returnUrl
 
 /**
  * Pay out a partner's accumulated commission (threshold: ≥ $25 / 2500 cents).
- * Commission = price_total * PLATFORM_FEE_RATE (18%) * partner.commission_rate (default 10%)
- * So for a $100 order: $100 * 0.18 * 0.10 = $1.80.
+ * Commission = price_total * PLATFORM_FEE_RATE (20%) * partner.commission_rate (default 10%)
+ * So for a $100 order: $100 * 0.20 * 0.10 = $2.00.
  * Idempotent via `partner_payout_{partnerId}_{orderId}` key so safe on retry.
  * Returns { transfer, amountCents } on success; null if below threshold or no Stripe account.
  */
