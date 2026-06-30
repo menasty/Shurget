@@ -220,3 +220,23 @@ body { padding-top: 72px; }
   .footer-inner { grid-template-columns: 1fr; gap: 2.5rem; }
   .footer-links { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
 }
+
+/* ── Nav text logo ─────────────────────────────────── */
+.logo-link {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+.logo-arrow {
+  font-size: 2rem;
+  color: #ea580c;
+  line-height: 1;
+}
