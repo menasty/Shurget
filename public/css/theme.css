@@ -118,7 +118,7 @@ footer {
 .nav-cta {
   margin-left: .5rem;
   padding: .6rem 1.25rem;
-  background: #ea580c;
+  background: #b84000;
   color: #fff;
   text-decoration: none;
   font-size: .875rem;
@@ -126,7 +126,7 @@ footer {
   border-radius: 8px;
   transition: background .15s;
 }
-.nav-cta:hover { background: #d14a00; }
+.nav-cta:hover { background: #9e3800; }
 .nav-toggle {
   display: none;
   background: none;
@@ -244,3 +244,64 @@ body { padding-top: 72px; }
   margin-bottom: 1rem;
   display: block;
 }
+
+/* ── Accessibility: focus indicators ───────────────────────────────── */
+:focus-visible {
+  outline: 3px solid #ea580c;
+  outline-offset: 3px;
+}
+.btn-hero-primary:focus-visible,
+.btn-hero-ghost:focus-visible,
+.btn-primary:focus-visible,
+.btn-driver:focus-visible,
+.btn-business:focus-visible,
+.nav-cta:focus-visible,
+.nav-link:focus-visible {
+  outline: 3px solid #ea580c;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Accessibility: skip navigation ─────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  z-index: 9999;
+  background: #b84000;
+  color: #fff;
+  padding: .75rem 1.25rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top .15s;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* ── Footer NAP & social ─────────────────────────────────────────────── */
+.footer-nap {
+  margin-top: .75rem;
+  font-size: .85rem;
+  color: rgba(255,255,255,.55);
+  line-height: 1.8;
+}
+.footer-nap a {
+  color: rgba(255,255,255,.7);
+  text-decoration: none;
+}
+.footer-nap a:hover { color: #ea580c; }
+
+.footer-social {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.footer-social a {
+  color: rgba(255,255,255,.5);
+  transition: color .2s;
+  display: flex;
+  align-items: center;
+}
+.footer-social a:hover { color: #ea580c; }
