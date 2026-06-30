@@ -1,6 +1,6 @@
 <nav class="site-nav" id="site-nav">
-  <a href="/" class="nav-logo">
-    <img src="/images/shurget-logo.png" alt="Shurget" />
+  <a href="/" class="nav-logo logo-link">
+    <span class="logo-text">Shurget</span><span class="logo-arrow">→</span>
   </a>
   <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">&#9776;</button>
   <div class="nav-links" id="nav-links">
@@ -19,7 +19,7 @@
     if (toggle && links) {
       toggle.addEventListener('click', () => {
         links.classList.toggle('open');
-        toggle.innerHTML = links.classList.contains('open') ? '&times;' : '&#9776;';
+        toggle.innerHTML = links.classList.contains('open') ? '\&times;' : '&#9776;';
       });
     }
     window.addEventListener('scroll', () => {
