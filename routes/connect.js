@@ -364,7 +364,7 @@ router.post('/checkout', async (req, res) => {
     }
 
     // Calculate application fee: platform keeps 15% of the transaction
-    const PLATFORM_FEE_RATE = 0.18;
+    const PLATFORM_FEE_RATE = 0.20;
     const applicationFeeAmount = Math.round(price.unit_amount * PLATFORM_FEE_RATE);
 
     // Create a Checkout session with a destination charge.
