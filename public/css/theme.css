@@ -221,22 +221,25 @@ body { padding-top: 72px; }
   .footer-links { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
 }
 
-/* ── Nav text logo ─────────────────────────────────── */
-.logo-link {
-  text-decoration: none;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
+/* ── Nav logo image ────────────────────────────────── */
+.nav-logo-img {
+  height: 40px;
+  width: auto;
+  display: block;
+  /* mix-blend-mode makes white pixels show on dark nav, removes apparent white bg */
+  mix-blend-mode: screen;
+  filter: brightness(1.1);
 }
-.logo-text {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.2rem;
-  color: #ffffff;
-  letter-spacing: 0.05em;
-  line-height: 1;
+
+@media (max-width: 768px) {
+  .nav-logo-img { height: 32px; }
 }
-.logo-arrow {
-  font-size: 2rem;
-  color: #ea580c;
-  line-height: 1;
+
+/* ── Footer decal icon ──────────────────────────────── */
+.footer-logo-decal {
+  width: 80px;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  display: block;
 }
