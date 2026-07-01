@@ -113,11 +113,17 @@ router.post('/:id/dispatch', async (req, res) => {
 
 /**
  * POST /api/orders/:id/complete
- * Driver marks delivery as done. Marks order status = 'delivered'.
- * Body: {} (no body needed — idempotent by order id)
+ * Admin/internal: marks order status = 'delivered'.
+ * Drivers should use POST /driver/jobs/:id/complete (session-authenticated).
+ * This endpoint is admin-scoped — requires admin session cookie.
  */
 router.post('/:id/complete', async (req, res) => {
   try {
+    // Verify admin session (same cookie pattern as admin routes)
+    const adminSession = req.cookies && req.cookies['adm_session'];
+    if (!adminSession) {
+      return res.status(401).json({ error: 'Unauthorized. Use /driver/jobs/:id/complete for driver-initiated completions.' });
+    }
     const order = await completeOrder(req.params.id);
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
