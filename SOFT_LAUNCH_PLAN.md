@@ -1,5 +1,5 @@
 # Shurget Soft-Launch Coordination Plan
-**Status:** Draft | **Date:** 2026-06-04 | **Stage:** Pre-launch
+**Status:** In Progress | **Date:** 2026-06-30 | **Stage:** Pre-launch — Items 7 & 8 Resolved
 
 ---
 
@@ -151,24 +151,24 @@ If ANY of these occur, pause operations and fix before continuing:
 
 ---
 
-## 7. Open Items (needs owner decision before launch)
+## 7. Open Items ~~(needs owner decision before launch)~~ ✓ RESOLVED 2026-06-30
 
-1. **Driver dispatch channel** — `/drive` is only a signup form. There is NO active dispatch API for a live driver to receive job assignments. Needs: a driver-facing endpoint (SMS push, email, or an authenticated GET /api/drive/available-jobs). Without this, the pilot cannot proceed beyond the first test order.
-2. **Delivery completion trigger** — No `PATCH /api/orders/:id/status` or equivalent exists. Orders have a `status` column but no route to set it to `delivered`. Needs: a driver-side "mark complete" endpoint wired to `confirmOrder` with `status: 'delivered'`.
-3. **Driver payment** — How are drivers paid? Weekly ACH? In-app payout? Define before onboarding drivers.
-4. **On-call contact** — Who do drivers call if something goes wrong mid-delivery?
+1. ~~**Driver dispatch channel**~~ — **RESOLVED.** `GET /driver/jobs` serves authenticated drivers a live list of available paid orders. Drivers accept via `POST /driver/jobs/:id/accept` (session-gated). Dispatch notification goes through Postmark email on booking confirmation.
+2. ~~**Delivery completion trigger**~~ — **RESOLVED.** `POST /driver/jobs/:id/complete` added (session-authenticated). Drivers tap "Mark as Delivered" in the My Jobs portal. Triggers delivered email + rating link to customer automatically. Admin can also complete via `POST /api/orders/:id/complete` (admin session required).
+3. **Driver payment** — Stripe Connect is live. Pilot approach: weekly manual payouts via Stripe Connect dashboard. Automated instant payouts can be enabled per driver once Connect onboarding is complete.
+4. **On-call contact** — Owner direct line. Add to driver briefing package before Day 1.
 
 ---
 
-## 8. Gaps Found (needs engineering before launch)
+## 8. Gaps Found ~~(needs engineering before launch)~~ ✓ RESOLVED 2026-06-30
 
 | Gap | Impact | Action |
 |-----|--------|--------|
-| No driver dispatch endpoint | Cannot assign drivers to orders | Add `POST /api/orders/:id/dispatch` that calls `confirmOrder` with driver info |
-| No delivery completion endpoint | Cannot close orders to `delivered` | Add `PATCH /api/orders/:id/status` or `POST /api/orders/:id/complete` |
-| No driver auth | Location updates and dispatch not authenticated | Gate with a simple driver token for pilot phase |
+| ~~No driver dispatch endpoint~~ | Resolved | `GET /driver/jobs` + `POST /driver/jobs/:id/accept` live — session authenticated |
+| ~~No delivery completion endpoint~~ | Resolved | `POST /driver/jobs/:id/complete` added — session auth, ownership verified, triggers delivered email |
+| ~~No driver auth~~ | Resolved | Full HMAC-signed session cookie auth in `routes/driver.js` — `requireDriver` middleware on all protected routes |
 
-**These gaps must be resolved before the first real delivery can occur.**
+**All three gaps resolved as of 2026-06-30. Engineering is clear for the first real delivery.**
 
 ---
 
